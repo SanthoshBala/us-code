@@ -1,3 +1,0 @@
-6633. STATE DEFINED
-
-In this part, the term ‘State’ means each of the 50 States, the District of Columbia, and the Commonwealth of Puerto Rico.
