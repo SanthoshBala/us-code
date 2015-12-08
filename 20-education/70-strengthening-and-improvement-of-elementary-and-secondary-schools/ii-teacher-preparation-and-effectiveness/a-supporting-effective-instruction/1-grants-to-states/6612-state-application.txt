@@ -1,0 +1,54 @@
+6612. STATE APPLICATION
+
+(a) In General.—
+	For a State to be eligible to receive a grant under this subpart, the State educational agency shall submit an application to the Secretary at such time and in such a manner as the Secretary may reasonably require, which shall include the following:
+		(1) A description of how the State educational agency will meet the requirements of this subpart.
+		(2) A description of how the State educational agency will use a grant received under section 2111, including the grant funds the State will reserve for State-level activities under section 2113(a)(2).
+		(3) A description of how the State educational agency will facilitate the sharing of evidence-based and other effective strategies among local educational agencies.
+		(4) A description of how, and under what timeline, the State educational agency will allocate subgrants under subpart 2 to local educational agencies.
+		(5) If applicable, a description of how the State educational agency will work with local educational agencies in the State to develop or implement a teacher or school leader evaluation system.
+		(6) An assurance that the State educational agency will comply with section 6501 (regarding participation by private school children and teachers).
+		(7) A description of how the State will establish, implement, or improve policies and procedures on background checks for school employees and contractors who have direct unsupervised access to students, which may be conducted and administered by the State or local educational agencies, including by—
+			(A) expanding the registries or repositories searched when conducting background checks, including—
+				(i) the State criminal registry or repository of the State in which the school employee resides;
+				(ii) the State-based child abuse and neglect registries and databases of the State in which the school employee resides;
+				(iii) the Federal Bureau of Investigation fingerprint check using the Integrated Automated Fingerprint Identification System;
+				(iv) the National Sex Offender Registry established under the Adam Walsh Child Protection and Safety Act of 2006 (42 U.S.C. 16901 et seq.); and
+				(v) the National Crime Information Center;
+			(B) establishing, implementing, or improving policies and procedures that prohibit employing as a school employee an individual who—
+				(i) refuses to consent to a background check;
+				(ii) makes false statements in connection with a background check;
+				(iii) has been convicted of a felony, consisting of—
+					(I) homicide;
+					(II) child abuse or neglect;
+					(III) a crime against children, including child pornography;
+					(IV) domestic violence;
+					(V) a crime involving rape or sexual assault;
+					(VI) kidnaping;
+					(VII) arson; or
+					(VIII) physical assault, battery, or a drug-related offense, committed on or after the date that is 5 years before the date of the individual’s criminal background check;
+				(iv) has been convicted of any other crimes, as determined by the State; or
+				(v) is registered or required to be registered on a State sex offender registry or the National Sex Offender Registry established under the Adam Walsh Child Protection and Safety Act of 2006 (42 U.S.C. 16901 et seq.);
+			(C) establishing, implementing, or improving policies and procedures for States, local educational agencies, or schools to provide the results of background checks to—
+				(i) individuals subject to the background checks in a statement that indicates whether the individual is ineligible for such employment due to the background check and includes information related to each disqualifying crime;
+				(ii) the employer in a statement that indicates whether a school employee is eligible or ineligible for employment, without revealing any disqualifying crime or other related information regarding the individual;
+				(iii) another employer in the same State or another State, as permitted under State law, without revealing any disqualifying crime or other related information regarding the individual; and
+				(iv) another local educational agency in the same State or another State that is considering such school employee for employment, as permitted under State law, without revealing any disqualifying crime or other related information regarding the individual; and
+			(D) developing, implementing, or improving mechanisms to assist local educational agencies and schools in effectively recognizing and quickly responding to incidents of child abuse by school employees.
+		(8) A description of any subjects the State has identified as being workforce critical subjects pursuant to section 2234(6).
+(b) Deemed Approval.—
+	An application submitted by a State educational agency under subsection (a) shall be deemed to be approved by the Secretary unless the Secretary makes a written determination, prior to the expiration of the 120-day period beginning on the date on which the Secretary received the application, that the application is not in compliance with this subpart.
+(c) Disapproval.—
+	The Secretary shall not finally disapprove an application, except after giving the State educational agency notice and an opportunity for a hearing.
+(d) Notification.—
+	If the Secretary finds that an application is not in compliance, in whole or in part, with this subpart, the Secretary shall—
+		(1) give the State educational agency notice and an opportunity for a hearing; and
+		(2) notify the State educational agency of the finding of noncompliance and, in such notification, shall—
+			(A) cite the specific provisions in the application that are not in compliance; and
+			(B) request additional information, only as to the noncompliant provisions, needed to make the application compliant.
+(e) Response.—
+	If a State educational agency responds to a notification from the Secretary under subsection (d)(2) during the 45-day period beginning on the date on which the agency received the notification, and resubmits the application with the requested information described in subsection (d)(2)(B), the Secretary shall approve or disapprove such application prior to the later of—
+		(1) the expiration of the 45-day period beginning on the date on which the application is resubmitted; or
+		(2) the expiration of the 120-day period described in subsection (b).
+(f) Failure To Respond.—
+	If a State educational agency does not respond to a notification from the Secretary under subsection (d)(2) during the 45-day period beginning on the date on which the agency received the notification, such application shall be deemed to be disapproved.

@@ -1,0 +1,22 @@
+6613. STATE USE OF FUNDS
+
+(a) In General.—
+	A State educational agency that receives a grant under section 2111 shall—
+		(1) reserve 95 percent of the grant funds to make subgrants to local educational agencies under subpart 2; and
+		(2) use the remainder of the funds, after reserving funds under paragraph (1), for the State activities described in subsection (b), except that the State may reserve not more than 1 percent of the grant funds for planning and administration related to carrying out activities described in subsection (b).
+(b) State-Level Activities.—
+	A State educational agency that receives a grant under section 2111—
+		(1) shall use the amount described in subsection (a)(2) to fulfill the State educational agency’s responsibilities with respect to the proper and efficient administration of the subgrant program carried out under this part; and
+		(2) may use the amount described in subsection (a)(2) to—
+			(A) provide training and technical assistance to local educational agencies on—
+				(i) in the case of a State educational agency not implementing a statewide teacher evaluation system—
+					(I) the development and implementation of a teacher evaluation system; and
+					(II) training school leaders in using such evaluation system; or
+				(ii) in the case of a State educational agency implementing a statewide teacher evaluation system, implementing such evaluation system;
+			(B) disseminate and share evidence-based and other effective practices, including practices consistent with the principles of effectiveness described in section 2222(b), related to teacher and school leader effectiveness and professional development;
+			(C) provide professional development for teachers, school leaders, and if appropriate, specialized instructional support personnel in the State consistent with section 2123(6);
+			(D) provide training and technical assistance to local educational agencies on—
+				(i) in the case of a State educational agency not implementing a statewide school leader evaluation system, the development and implementation of a school leader evaluation system; and
+				(ii) in the case of a State educational agency implementing a statewide school leader evaluation system, implementing such evaluation system;
+			(E) develop and implement policies in the State to address any teacher workforce shortages in high-need subjects, including in science, technology, engineering, math, computer science, and foreign languages; and
+			(F) support State or local pay for success initiatives that meet the purposes of this part.

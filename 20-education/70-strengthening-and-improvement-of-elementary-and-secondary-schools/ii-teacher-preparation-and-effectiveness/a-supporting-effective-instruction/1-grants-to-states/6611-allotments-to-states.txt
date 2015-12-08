@@ -1,0 +1,18 @@
+6611. ALLOTMENTS TO STATES
+
+(a) In General.
+	—Of the amounts appropriated under section 3(b), the Secretary shall reserve 75 percent to make grants to States with applications approved under section 2112 to pay for the Federal share of the cost of carrying out the activities specified in section 2113. Each grant shall consist of the allotment determined for a State under subsection (b).
+(b) Determination Of Allotments.—
+	(1) RESERVATION OF FUNDS.—Of the amount reserved under subsection (a) for a fiscal year, the Secretary shall reserve—
+		(A) not more than 1 percent to carry out national activities under section 2132;
+		(B) one-half of 1 percent for allotments to outlying areas on the basis of their relative need, as determined by the Secretary, in accordance with the purpose of this part; and
+		(C) one-half of 1 percent for the Secretary of the Interior for programs under this part in schools operated or funded by the Bureau of Indian Education.
+	(2) STATE ALLOTMENTS.—
+		(A) IN GENERAL.—Subject to subparagraph (B), from the funds reserved under subsection (a) for any fiscal year and not reserved under paragraph (1), the Secretary shall allot to each State the sum of—
+			(i) an amount that bears the same relationship to 50 percent of the funds as the number of individuals age 5 through 17 in the State, as determined by the Secretary on the basis of the most recent satisfactory data, bears to the number of those individuals in all such States, as so determined; and
+			(ii) an amount that bears the same relationship to 50 percent of the funds as the number of individuals age 5 through 17 from families with incomes below the poverty line in the State, as determined by the Secretary on the basis of the most recent satisfactory data, bears to the number of those individuals in all such States, as so determined.
+		(B) SMALL STATE MINIMUM.—No State receiving an allotment under subparagraph (A) may receive less than one-half of 1 percent of the total amount of funds allotted under such subparagraph for a fiscal year.
+		(C) APPLICABILITY.—
+			(i) IN GENERAL.—Subparagraph (A) shall not apply with respect to a fiscal year unless the Secretary certifies in writing to Congress for that fiscal year that the amount of funds allotted under subparagraph (A) to local educational agencies that serve a high percentage of students from families with incomes below the poverty line is not less than the amount allotted to such local educational agencies for fiscal year 2015.
+			(ii) SPECIAL RULE.—For a fiscal year for which subparagraph (A) does not apply, the Secretary shall allocate to each State the funds described in subparagraph (A) according to the formula set forth in subsection (b)(2)(B)(i) of this section as in effect on the day before the date of the enactment of the Student Success Act.
+(c) Reallotment.—If a State does not apply for an allotment under this section for any fiscal year or only a portion of the State’s allotment is allotted under subsection (b)(2), the Secretary shall reallot the State’s entire allotment or the remaining portion of its allotment, as the case may be, to the remaining States in accordance with subsection (b).

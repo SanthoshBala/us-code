@@ -1,0 +1,8 @@
+6621. ALLOCATIONS TO LOCAL EDUCATIONAL AGENCIES
+
+(a) In General.—
+	Each State receiving a grant under section 2111 shall use the funds reserved under section 2113(a)(1) to award subgrants to local educational agencies under this section.
+(b) Allocation Of Funds.—
+	From the funds reserved by a State under section 2113(a)(1), the State educational agency shall allocate to each local educational agency in the State the sum of—
+		(1) an amount that bears the same relationship to 50 percent of the funds as the number of individuals age 5 through 17 in the geographic area served by the local educational agency, as determined by the State on the basis of the most recent satisfactory data, bears to the number of those individuals in the geographic areas served by all the local educational agencies in the State, as so determined; and
+		(2) an amount that bears the same relationship to 50 percent of the funds as the number of individuals age 5 through 17 from families with incomes below the poverty line in the geographic area served by the local educational agency, as determined by the State on the basis of the most recent satisfactory data, bears to the number of those individuals in the geographic areas served by all the local educational agencies in the State, as so determined.
