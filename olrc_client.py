@@ -80,9 +80,6 @@ class OlrcClient:
 	# For any files that need to be downloaded from the web, use this internal
 	# function to save the contents of the file locally.
 	def _downloadWebDocument(self, webUrl, destDir):
-		#cmd = "wget --directory-prefix=%s %s" % (destDir, webUrl)
-		#print cmd
-		#call(cmd)
 		# Open local file.
 		fileName = webUrl.split("/")[-1]
 		localFile = open(destDir + fileName, "w")
