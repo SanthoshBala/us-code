@@ -33,11 +33,11 @@ class OlrcClient:
 	# 	XHTML: ...downloadxhtml.shtml
 	TITLE_ARCHIVE_FORMAT_URL_MAP = {
 		# (%d, %d) = (YEAR, TITLE)
-		CODE_FORMAT_GPO : "http://uscode.house.gov/download/annualhistoricalarchives/zip/%d/usc%d.zip",
+		CODE_FORMAT_GPO : "http://uscode.house.gov/download/annualhistoricalarchives/zip/%d/usc%02d.zip",
 		# (%d, %d, %d) = (YEAR, YEAR, TITLE)
-		CODE_FORMAT_PDF : "http://uscode.house.gov/download/annualhistoricalarchives/pdf/%d/%dusc%d.pdf",
+		CODE_FORMAT_PDF : "http://uscode.house.gov/download/annualhistoricalarchives/pdf/%d/%dusc%02d.pdf",
 		# (%d, %d, %d) = (YEAR, YEAR, TITLE)
-		CODE_FORMAT_XHTML : "http://uscode.house.gov/download/annualhistoricalarchives/XHTML/%d/%dusc%d.htm"
+		CODE_FORMAT_XHTML : "http://uscode.house.gov/download/annualhistoricalarchives/XHTML/%d/%dusc%02d.htm"
 	}
 
 	# The U.S. Code has had a variable number of titles between 1994 and 2015.
@@ -93,7 +93,7 @@ class OlrcClient:
 		return
 
 	def fetchAnnualArchive(self, year=LAST_ANNUAL_ARCHIVE_YEAR, 
-								format=CODE_FORMAT_GPO):
+								format=CODE_FORMAT_XHTML):
 		# Validate year.
 		if not self._isValidYear(year):
 			return None
@@ -110,16 +110,16 @@ class OlrcClient:
 				downloadUrl = baseDownloadUrl % (year, title)
 			else:
 				downloadUrl = baseDownloadUrl % (year, year, title)
-			print "Downloading Title %d/%d in %s format" % (title, numTitles, format)
+			print "Downloading %d Title %d/%d as %s" % (year, title, numTitles, format)
 			self._downloadWebDocument(downloadUrl, destDir)
 
 		return
 
-	def fetchAllAnnualArchives(format=CODE_FORMAT_GPO):
+	def fetchAllAnnualArchives(self, format=CODE_FORMAT_XHTML):
 		# Download archives for all years.
 		for year in range(OlrcClient.FIRST_ANNUAL_ARCHIVE_YEAR,
 							OlrcClient.LAST_ANNUAL_ARCHIVE_YEAR + 1):
-			fetchAnnualArchive(year=year, format=format)
+			self.fetchAnnualArchive(year=year, format=format)
 
 		return
 
