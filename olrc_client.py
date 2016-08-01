@@ -3,7 +3,7 @@
 # olrc-driver.py
 #
 # The OLRC (Office of the Law Revision Counsel) maintains the U.S. Code and
-# Public Laws. The publish data in a variety of formats, but this class
+# Public Laws. They publish data in a variety of formats, but this class
 # provides all the utility necessary to fetch US Code data.
 
 import httplib
@@ -11,6 +11,7 @@ import os
 from subprocess import call
 from urllib2 import urlopen
 
+# Class for communicating with OLRC to download U.S. Code data.
 class OlrcClient:
 	def __init__(self):
 		# Root directory for downloading and organizing files.
@@ -80,15 +81,9 @@ class OlrcClient:
 	# For any files that need to be downloaded from the web, use this internal
 	# function to save the contents of the file locally.
 	def _downloadWebDocument(self, webUrl, destDir):
-		# Open local file.
 		fileName = webUrl.split("/")[-1]
-		localFile = open(destDir + fileName, "w")
-		# Copy contents of web document to local file.
-		response = urlopen(webUrl)
-		localFile.write(response.read())
-		# Close file and socket.
-		localFile.close()
-		response.close()
+		cmd = "curl --create-dirs -# -v -o %s%s %s" % (destDir, fileName, webUrl)
+		call(cmd, shell=True)
 
 		return
 
