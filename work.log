@@ -5,3 +5,29 @@
 
 # 07.17.2016
 	* Wrote client for fetching annual archives from OLRC in PDF, XHTML, and GPO formats
+	* Decided that XHTML should be the primary document format for proceeding analyses
+	* Explanation of PCC/GPO: https://www.law.cornell.edu/lexcraft/uscode/docs/QuickGuide.txt
+	* US Legislative Markup Schema: http://uscode.house.gov/download/resources/USLM-User-Guide.pdf
+	* Other sites to investigate: Govtrack.us, Sunlight congress API, unitedstates github
+
+# 07.30.2016
+	* Diff types in USC01 (1994-1995):
+		– jsessionid
+		– PDF page #
+		– "Valid through" date
+		– substantive addition
+		– substantive removal
+	* Possible cleanup:
+		– Remove header (id="header")
+		– Change background color to #FAFAFA
+		– Remove id=menu_homeLink
+		– Remove id=menu
+		– Change font to helvetica
+	* XML Cleanup
+		– NUL
+		– Note: must specify "lxml" as BeautifulSoup parser – "xml" cuts off the document
+
+# 08.05.2016
+	* Successfully cut out all of the extraneous notes!
+	* Now need to style the document to make it look nice across form factors
+	* Need to think about organizational structure for year vs. subject
