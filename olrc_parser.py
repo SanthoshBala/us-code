@@ -55,7 +55,8 @@ class OlrcParser:
 	def _deleteInlineStyles(self, xmlSoup):
 		for tag in xmlSoup.recursiveChildGenerator():
 			try:
-				tag.attrs['style'] = None
+				tag.attrs.pop('style', None)
+				tag.attrs.pop('width', None)
 			except AttributeError:
 				pass
 
@@ -79,7 +80,9 @@ class OlrcParser:
 		commentTypes = ["notes", "repeal-note", "secref", "sectionreferredto", "amendment-note", 
 						"crossreference-note", "miscellaneous-note", "source-credit",
 						"footnote", "analysis", "effectivedate-note", "documentid:",
-						" PDFPage", "usckey:", "itemsortkey:", "itempath:", "HTTP"]
+						" PDFPage", "usckey:", "itemsortkey:", "itempath:", "HTTP",
+						"referenceintext-note", "changeofname-note", "shorttitle-note",
+						"function-transfer-repeal-savingsclause-similarprovisions-note"]
 
 		for tableClass in tableClasses:
 			tags = xmlSoup.findAll("table", {"class" : tableClass})
