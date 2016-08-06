@@ -26,6 +26,9 @@ class OlrcClient:
 	CODE_FORMAT_PDF = "pdf"
 	CODE_FORMAT_XHTML = "xhtml"	
 
+	ARCHIVE_NAME_FORMAT_PDF = "%dusc%02d.pdf"
+	ARCHIVE_NAME_FORMAT_XHTML = "%dusc%02d.htm"
+
 	# The Annual Archives are available in three formats: PDF, GPO, and XHTML.
 	# Find the raw archive files at the following URLs.
 	# Base URL: http://uscode.house.gov/download/annualhistoricalarchives/...
@@ -82,8 +85,33 @@ class OlrcClient:
 	# function to save the contents of the file locally.
 	def _downloadWebDocument(self, webUrl, destDir):
 		fileName = webUrl.split("/")[-1]
-		cmd = "curl --create-dirs -# -v -o %s%s %s" % (destDir, fileName, webUrl)
+		cmd = "curl --create-dirs -# -o %s%s %s" % (destDir, fileName, webUrl)
 		call(cmd, shell=True)
+
+		return
+
+	def fetchAnnualArchiveTitle(self, title, year=LAST_ANNUAL_ARCHIVE_YEAR,
+		format=CODE_FORMAT_XHTML):
+
+		baseDownloadUrl = OlrcClient.TITLE_ARCHIVE_FORMAT_URL_MAP[format]
+		destDir = self.OLRC_ROOT_DIRECTORY + "archives/%s/%d/" % (format, year)
+		# If destDir does not exist, create it.
+		if not os.path.exists(destDir):
+			os.makedirs(destDir)
+
+		# If file already exists, continue.
+		existingFiles = os.listdir(destDir)
+		# TODO(santhoshbala): Generalize this condition to work for non-XHTML file formats.
+		if OlrcClient.ARCHIVE_NAME_FORMAT_XHTML % (year, title) in existingFiles:
+			print "%d Title %d already downloaded." % (year, title)
+		else:
+			if format == OlrcClient.CODE_FORMAT_GPO:
+				downloadUrl = baseDownloadUrl % (year, title)
+			else:
+				downloadUrl = baseDownloadUrl % (year, year, title)
+
+			print "Downloading %d Title %d as %s" % (year, title, format)
+			self._downloadWebDocument(downloadUrl, destDir)
 
 		return
 
@@ -95,18 +123,9 @@ class OlrcClient:
 
 		# Download all titles for this year.
 		numTitles = OlrcClient.YEAR_TITLE_COUNT_MAP[year]
-		baseDownloadUrl = OlrcClient.TITLE_ARCHIVE_FORMAT_URL_MAP[format]
-		destDir = self.OLRC_ROOT_DIRECTORY + "archives/%s/%d/" % (format, year)
-		# If destDir does not exist, create it.
-		if not os.path.exists(destDir):
-			os.makedirs(destDir)
+		
 		for title in range(1, numTitles + 1):
-			if format == OlrcClient.CODE_FORMAT_GPO:
-				downloadUrl = baseDownloadUrl % (year, title)
-			else:
-				downloadUrl = baseDownloadUrl % (year, year, title)
-			print "Downloading %d Title %d/%d as %s" % (year, title, numTitles, format)
-			self._downloadWebDocument(downloadUrl, destDir)
+			self.fetchAnnualArchiveTitle(title, year, format)
 
 		return
 
