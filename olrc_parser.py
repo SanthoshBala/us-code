@@ -7,6 +7,7 @@
 # provides all the utility necessary to parse and manipulator that data.
 
 from bs4 import BeautifulSoup, Comment
+from titlecase import titlecase
 
 # Class for parsing OLRC data, based on BeautifulSoup.
 class OlrcParser:
@@ -44,10 +45,67 @@ class OlrcParser:
 
 		self._deleteEditorialNotes(xmlSoup)
 		self._deleteInlineStyles(xmlSoup)
+		self._injectStyleSheet(xmlSoup)
+		self._injectMetaViewportTag(xmlSoup)
+		self._titleCaseTitleAndChapter(xmlSoup)
+		self._dotSectionHeaders(xmlSoup)
+		self._removeSourceParentheses(xmlSoup)
 
 		outFile = open(outFileName, 'w')
 		outFile.write(xmlSoup.prettify("utf-8"))
 		outFile.close()
+
+		return
+
+	def _injectMetaViewportTag(self, xmlSoup):
+		head = xmlSoup.find("head")
+		metaTag = xmlSoup.new_tag("meta", content="width=device-width, initial-scale=1")
+		metaTag.attrs['name'] = "viewport"
+		head.insert(2, metaTag)
+
+		return
+
+	def _removeSourceParentheses(self, xmlSoup):
+		sourceCredits = xmlSoup.findAll("p", {"class" : "source-credit"})
+
+		for sourceCredit in sourceCredits:
+			# Strip parentheses and new lines
+			sourceCredit.string = sourceCredit.text.strip()[1:-1]
+
+		return
+
+	def _dotSectionHeaders(self, xmlSoup):
+		sectionHeaders = xmlSoup.findAll("h3", {"class" : "section-head"})
+
+		for sectionHeader in sectionHeaders:
+			# Replace period with middle dot
+			sectionHeader.string = sectionHeader.text.replace(u".", u" \u00B7")
+
+		return
+
+	def _titleCaseTitleAndChapter(self, xmlSoup):
+		titles = xmlSoup.findAll("h1", {"class" : "usc-title-head"})
+
+		for title in titles:
+			# Clean em dash
+			title.string = title.text.replace(u"\u2014", u" \u2014 ")
+			# Title case
+			title.string = titlecase(title.text.lower())
+
+		chapters = xmlSoup.findAll("h3", {"class" : "chapter-head"})
+
+		for chapter in chapters:
+			# Clean em dash
+			chapter.string = chapter.text.replace(u"\u2014", u". ")
+			# Title case
+			chapter.string = titlecase(chapter.text.lower())
+		
+		return
+
+	def _injectStyleSheet(self, xmlSoup):
+		head = xmlSoup.find("head")
+		linkTag = xmlSoup.new_tag("link", rel="stylesheet", type="text/css", href="us-code-title.css")
+		head.insert(1, linkTag)
 
 		return
 
@@ -76,7 +134,7 @@ class OlrcParser:
 		divClasses = ["analysis"]
 		divIds = ["footer", "resizeWindow", "menu", "menu_homeLink", "header"]
 		spanIds = ["resizeWindow"]
-		tagTypes = ["br", "meta", "script", "noscript", "link"]
+		tagTypes = ["br", "meta", "script", "noscript", "link", "sup"]
 		commentTypes = ["notes", "repeal-note", "secref", "sectionreferredto", "amendment-note", 
 						"crossreference-note", "miscellaneous-note", "source-credit",
 						"footnote", "analysis", "effectivedate-note", "documentid:",
