@@ -23,6 +23,7 @@ class OlrcParser:
 		self.format = format
 		self.inFile = open(inFileName)
 
+
 		return
 
 	# Parse the file provided as input and write the output to outfile.
@@ -40,12 +41,15 @@ class OlrcParser:
 
 	def _parseXML(self, outFileName):
 		
-
+		xmlSoup = BeautifulSoup(self.inFile, OlrcParser.XML_PARSER)
 		self._deleteXmlHeaderUI(xmlSoup)
 
 		self._deleteXmlMenu(xmlSoup)
+		self._deleteXmlResizeWindow(xmlSoup)
 
 		outFile = open(outFileName, 'w')
+		outFile.write(xmlSoup.prettify("utf-8"))
+		outFile.close()
 
 		return
 
@@ -69,13 +73,20 @@ class OlrcParser:
 	# Delete that div for the sake of clarity.
 	def _deleteXmlResizeWindow(self, xmlSoup):
 		resizeWindowDiv = xmlSoup.find("div", {"id" : "resizeWindow"})
-		resizeWindowDiv.extract()
+		try:
+			resizeWindowDiv.extract()
+		except AttributeError:
+			pass
 
 		resizeWindowSpan = xmlSoup.find("span", {"id" : "resizeWindow"})
-		resizeWindowSpan.extract()
+		try:
+			resizeWindowSpan.extract()
+		except AttributeError:
+			pass
 
 		return
 
+	# Delete footer XML for sake of clarity.
 	def _deleteXmlFooter(self, xmlSoup):
 		footer = xmlSoup.find("div", {"id" : "footer"})
 		footer.extract()
@@ -90,5 +101,39 @@ class OlrcParser:
 		pageBreaks = xmlSoup.findAll(text=lambda text:isinstance(text, Comment) and " PDFPage" in text)
 		for pageBreak in pageBreaks:
 			pageBreak.extract()
+
+		return
+
+	# USC XML files contain a variety of editorial notes, including notes about
+	# (1) amendments
+	# (2) notes about other sections which refer to the current section
+	# (3) cross-references to other legal documents
+	# (4) other miscellaneous notes
+	def _deleteEditorialNotes(self, xmlSoup):
+		# To get rid of all notes, need to delete classes matching "note-head"
+		# and "note-body", as well as the comments for "repeal-note", "secref",
+		# "sectionreferredto", "amendment-note", "crossreference-note", and
+		# "miscellaneous-note".
+		pClasses = ["note-head", "note-body"]
+		commentTypes = ["repeal-note", "secref", "sectionreferredto", "amendment-note", 
+						"crossreference-note", "miscellaneous-note"]
+
+		for pClass in pClasses:
+			tags = xmlSoup.findAll("p", {"class" : pClass})
+			for tag in tags:
+				try:
+					print pClass
+					tag.extract()
+				except AttributeError:
+					pass
+
+		for commentType in commentTypes:
+			tags = xmlSoup.findAll(text=lambda text:isinstance(text, Comment) and commentType in text)
+			for tag in tags:
+				try:
+					print commentType
+					tag.extract()
+				except AttributeError:
+					pass
 
 		return
