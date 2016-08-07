@@ -31,3 +31,9 @@
 	* Successfully cut out all of the extraneous notes!
 	* Now need to style the document to make it look nice across form factors
 	* Need to think about organizational structure for year vs. subject
+
+# 08.06.2016
+	* Figured out that you need a viewport meta tag to make the CSS pixel measurements work on mobile and desktop
+	* Created beginnings of an end-to-end pipeline, and tested publishing to github.io
+	* Discovered that there are other complex non-statutory elements that need to be removed, including repealed section
+		headers. Might just need to do something custom for that case =(
