@@ -103,14 +103,15 @@ class OlrcClient:
 		existingFiles = os.listdir(destDir)
 		# TODO(santhoshbala): Generalize this condition to work for non-XHTML file formats.
 		if OlrcClient.ARCHIVE_NAME_FORMAT_XHTML % (year, title) in existingFiles:
-			print "%d Title %d already downloaded." % (year, title)
+			pass
+			#print "\t%d Title %d already downloaded." % (year, title)
 		else:
 			if format == OlrcClient.CODE_FORMAT_GPO:
 				downloadUrl = baseDownloadUrl % (year, title)
 			else:
 				downloadUrl = baseDownloadUrl % (year, year, title)
 
-			print "Downloading %d Title %d as %s" % (year, title, format)
+			print "\tDownloading %d Title %d as %s" % (year, title, format)
 			self._downloadWebDocument(downloadUrl, destDir)
 
 		return
@@ -133,6 +134,7 @@ class OlrcClient:
 		# Download archives for all years.
 		for year in range(OlrcClient.FIRST_ANNUAL_ARCHIVE_YEAR,
 							OlrcClient.LAST_ANNUAL_ARCHIVE_YEAR + 1):
+			print year
 			self.fetchAnnualArchive(year=year, format=format)
 
 		return

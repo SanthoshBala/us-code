@@ -43,12 +43,19 @@ class OlrcParser:
 		
 		xmlSoup = BeautifulSoup(self.inFile, OlrcParser.XML_PARSER)
 
+		print "_deleteEditorialNotes"
 		self._deleteEditorialNotes(xmlSoup)
+		print "_deleteInlineStyles"
 		self._deleteInlineStyles(xmlSoup)
+		print "_injectStyleSheet"
 		self._injectStyleSheet(xmlSoup)
+		print "_injectMetaViewportTag"
 		self._injectMetaViewportTag(xmlSoup)
+		print "_titleCaseTitleAndChapter"
 		self._titleCaseTitleAndChapter(xmlSoup)
+		print "_dotSectionHeaders"
 		self._dotSectionHeaders(xmlSoup)
+		print "_removeSourceParentheses"
 		self._removeSourceParentheses(xmlSoup)
 
 		outFile = open(outFileName, 'w')
@@ -129,12 +136,15 @@ class OlrcParser:
 	def _deleteEditorialNotes(self, xmlSoup):
 		# To get rid of all notes, need to delete <table>, <div>, <p>, <h4>, and <!--> tags.
 		tableClasses = ["uscdispo3col"]
-		hClasses = ["note-head", "note-sub-head", "source-credit"]
-		pClasses = ["note-head", "note-body", "note-body-1em", "footnote", "presidential-signature"]
+		h3Classes = ["analysis-subhead"]
+		h4Classes = ["note-head", "note-sub-head", "source-credit", "analysis-subhead"]
+		pClasses = ["note-head", "note-body", "note-body-1em", "footnote", "presidential-signature",
+					"note-body-flush0_hang1", "note-body-block", "note-body-2em"]
 		divClasses = ["analysis"]
 		divIds = ["footer", "resizeWindow", "menu", "menu_homeLink", "header"]
 		spanIds = ["resizeWindow"]
-		tagTypes = ["br", "meta", "script", "noscript", "link", "sup"]
+		deletableTags = ["br", "meta", "script", "noscript", "link", "sup"]
+		extraneousTags = ["strong"]
 		commentTypes = ["notes", "repeal-note", "secref", "sectionreferredto", "amendment-note", 
 						"crossreference-note", "miscellaneous-note", "source-credit",
 						"footnote", "analysis", "effectivedate-note", "documentid:",
@@ -150,7 +160,15 @@ class OlrcParser:
 				except AttributeError:
 					pass
 
-		for hClass in hClasses:
+		for hClass in h3Classes:
+			tags = xmlSoup.findAll("h3", {"class" : hClass})
+			for tag in tags:
+				try:
+					tag.extract()
+				except AttributeError:
+					pass
+
+		for hClass in h4Classes:
 			tags = xmlSoup.findAll("h4", {"class" : hClass})
 			for tag in tags:
 				try:
@@ -198,12 +216,17 @@ class OlrcParser:
 				except AttributeError:
 					pass
 
-		for tagType in tagTypes:
-			tags = xmlSoup.findAll(tagType)
+		for deletableTag in deletableTags:
+			tags = xmlSoup.findAll(deletableTag)
 			for tag in tags:
 				try:
 					tag.extract()
 				except AttributeError:
 					pass
+
+		for extraneousTag in extraneousTags:
+			tags = xmlSoup.findAll(extraneousTag)
+			for tag in tags:
+				tag.replaceWith(tag.text)
 
 		return
