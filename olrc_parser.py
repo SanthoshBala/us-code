@@ -106,7 +106,6 @@ class OlrcParser:
 		subchapters = xmlSoup.findAll("h3", {"class" : "subchapter-head"})
 		for subchapter in subchapters:
 			# Clean em dash and title case
-			print subchapter
 			[prefix, suffix] = subchapter.text.split(u"\u2014")
 			[heading, number] = prefix.split(" ", 1)
 			heading = titlecase(heading.lower())
@@ -164,20 +163,15 @@ class OlrcParser:
 						"function-transfer-note", "effectivedate-terminationdate-note",
 						"historicalandrevision-note", "terminationdate-note", "construction-note"])
 
-		print "\tComments"
 		commentTags = xmlSoup.findAll(text=lambda text:isinstance(text, Comment))
 
 		loopStart = time.time()
 		for comment in commentTags:
-#			comment.extract()
 			for commentType in commentTypes:
 				if commentType in comment:
 					comment.extract()
 
-		print "\t%f" % (time.time() - loopStart)
-
 		tags = xmlSoup.findAll(True)
-		print "\tTags"
 		loopStart = time.time()
 		decomposeSet = set()
 		for tag in tags:
@@ -216,5 +210,3 @@ class OlrcParser:
 
 		for tag in decomposeSet:
 			tag.decompose()
-
-		print "\t%f" % (time.time() - loopStart)
