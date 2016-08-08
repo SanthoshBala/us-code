@@ -40,9 +40,25 @@ body {
     color: #3369E8;
 }
 
+/* 1994.13 */
+.subchapter-head {
+	font-size: 16pt;
+	font-weight: normal;
+    color: #3cba54;
+}
+
 .section-head {
 	font-weight: normal;
 	font-size: 14pt;
+}
+
+.subsection-head {
+
+}
+
+/* USC 1994.2*/
+.formula {
+
 }
 
 .statutory-body {
@@ -53,13 +69,19 @@ body {
 .statutory-body-1em {
 	font-weight: normal;
 	font-size: 12pt;
-	margin-left: 16px;
+	margin-left: 24px;
 }
 
 .statutory-body-2em {
 	font-weight: normal;
 	font-size: 12pt;
-	margin-left: 16px;
+	margin-left: 48px;
+}
+
+.statutory-body-3em {
+	font-weight: normal;
+	font-size: 12pt;
+	margin-left: 72px;
 }
 
 .source-credit {
