@@ -8,6 +8,7 @@
 
 from bs4 import BeautifulSoup, Comment
 from titlecase import titlecase
+import time
 
 # Class for parsing OLRC data, based on BeautifulSoup.
 class OlrcParser:
@@ -85,33 +86,38 @@ class OlrcParser:
 		sectionHeaders = xmlSoup.findAll("h3", {"class" : "section-head"})
 
 		for sectionHeader in sectionHeaders:
-			# Replace period with middle dot
-			sectionHeader.string = sectionHeader.text.replace(u".", u" \u00B7")
+			# Replace period with middle dot (only first instance)
+			sectionHeader.string = sectionHeader.text.replace(u".", u" \u00B7", 1)
 
 		return
 
 	def _titleCaseTitleAndChapter(self, xmlSoup):
-		titles = xmlSoup.findAll("h1", {"class" : "usc-title-head"})
 
+		titles = xmlSoup.findAll("h1", {"class" : "usc-title-head"})
 		for title in titles:
-			# Clean em dash
-			title.string = title.text.replace(u"\u2014", u" \u2014 ")
-			# Title case
-			title.string = titlecase(title.text.lower())
+			# Clean em dash and title case
+			title.string = u" \u2014 ".join([titlecase(s.lower()) for s in title.text.split(u"\u2014")])
 
 		chapters = xmlSoup.findAll("h3", {"class" : "chapter-head"})
-
 		for chapter in chapters:
-			# Clean em dash
-			chapter.string = chapter.text.replace(u"\u2014", u". ")
-			# Title case
-			chapter.string = titlecase(chapter.text.lower())
+			# Clean em dash and title case
+			chapter.string = u". ".join([titlecase(s.lower()) for s in chapter.text.split(u"\u2014")])
+
+		subchapters = xmlSoup.findAll("h3", {"class" : "subchapter-head"})
+		for subchapter in subchapters:
+			# Clean em dash and title case
+			print subchapter
+			[prefix, suffix] = subchapter.text.split(u"\u2014")
+			[heading, number] = prefix.split(" ", 1)
+			heading = titlecase(heading.lower())
+			suffix = titlecase(suffix.lower())
+			subchapter.string = u". ".join([titlecase(s.lower()) for s in subchapter.text.split(u"\u2014")])
 		
 		return
 
 	def _injectStyleSheet(self, xmlSoup):
 		head = xmlSoup.find("head")
-		linkTag = xmlSoup.new_tag("link", rel="stylesheet", type="text/css", href="us-code-title.css")
+		linkTag = xmlSoup.new_tag("link", rel="stylesheet", type="text/css", href="../../stylesheets/us-code-title.css")
 		head.insert(1, linkTag)
 
 		return
@@ -135,98 +141,80 @@ class OlrcParser:
 	# (5) <script>, <br>, etc.
 	def _deleteEditorialNotes(self, xmlSoup):
 		# To get rid of all notes, need to delete <table>, <div>, <p>, <h4>, and <!--> tags.
-		tableClasses = ["uscdispo3col"]
-		h3Classes = ["analysis-subhead"]
-		h4Classes = ["note-head", "note-sub-head", "source-credit", "analysis-subhead"]
-		pClasses = ["note-head", "note-body", "note-body-1em", "footnote", "presidential-signature",
-					"note-body-flush0_hang1", "note-body-block", "note-body-2em"]
-		divClasses = ["analysis"]
-		divIds = ["footer", "resizeWindow", "menu", "menu_homeLink", "header"]
-		spanIds = ["resizeWindow"]
-		deletableTags = ["br", "meta", "script", "noscript", "link", "sup"]
-		extraneousTags = ["strong"]
-		commentTypes = ["notes", "repeal-note", "secref", "sectionreferredto", "amendment-note", 
-						"crossreference-note", "miscellaneous-note", "source-credit",
-						"footnote", "analysis", "effectivedate-note", "documentid:",
-						" PDFPage", "usckey:", "itemsortkey:", "itempath:", "HTTP",
+		tableClasses = set(["uscdispo3col", "uscdispo2col", "uschistrev"])
+		h3Classes = set([]) # "analysis-subhead"
+		h4Classes = set(["note-head", "note-sub-head", "source-credit", "analysis-subhead", "futureamend-note-head"])
+		pClasses = set(["note-head", "note-body", "note-body-1em", "footnote", "presidential-signature",
+					"note-body-flush0_hang1", "note-body-block", "note-body-2em", "note-body-flush2_hang3",
+					"futureamend-note-body", "note-body-flush3_hang4", "note-body-flush0_hang4",
+					"note-body-3em"])
+		divClasses = set(["analysis", "two-column-analysis-style-content-right"])
+		divIds = set(["footer", "resizeWindow", "menu", "menu_homeLink", "header"])
+		spanIds = set(["resizeWindow"])
+		deletableTags = set(["br", "meta", "script", "noscript", "link", "sup"])
+		extraneousTags = set(["strong"])
+		commentTypes = set(["notes", "repeal-note", "secref", "sectionreferredto", "amendment-note", 
+						"crossreference-note", "miscellaneous-note", "sourcecredit",
+						"footnote", "analysis", "effectivedate-note", "documentid",
+						"PDFPage", "usckey", "itemsortkey", "itempath:", "HTTP",
 						"referenceintext-note", "changeofname-note", "shorttitle-note",
-						"function-transfer-repeal-savingsclause-similarprovisions-note"]
+						"function-transfer-repeal-savingsclause-similarprovisions-note",
+						"savings-provision-note", "repeal-savingsprovision-note", "repealsummary",
+						"codification-note", "priorprovisions-note", "constitutionalprovisions-note",
+						"function-transfer-note", "effectivedate-terminationdate-note",
+						"historicalandrevision-note", "terminationdate-note", "construction-note"])
 
-		for tableClass in tableClasses:
-			tags = xmlSoup.findAll("table", {"class" : tableClass})
-			for tag in tags:
-				try:
-					tag.extract()
-				except AttributeError:
-					pass
+		print "\tComments"
+		commentTags = xmlSoup.findAll(text=lambda text:isinstance(text, Comment))
 
-		for hClass in h3Classes:
-			tags = xmlSoup.findAll("h3", {"class" : hClass})
-			for tag in tags:
-				try:
-					tag.extract()
-				except AttributeError:
-					pass
+		loopStart = time.time()
+		for comment in commentTags:
+#			comment.extract()
+			for commentType in commentTypes:
+				if commentType in comment:
+					comment.extract()
 
-		for hClass in h4Classes:
-			tags = xmlSoup.findAll("h4", {"class" : hClass})
-			for tag in tags:
-				try:
-					tag.extract()
-				except AttributeError:
-					pass
+		print "\t%f" % (time.time() - loopStart)
 
-		for pClass in pClasses:
-			tags = xmlSoup.findAll("p", {"class" : pClass})
-			for tag in tags:
-				try:
-					tag.extract()
-				except AttributeError:
-					pass
+		tags = xmlSoup.findAll(True)
+		print "\tTags"
+		loopStart = time.time()
+		decomposeSet = set()
+		for tag in tags:
+			iterStart = time.time()
+			if tag.name == "table":
+				if tag.attrs.get('class'):
+					if tag.attrs.get('class')[0] in tableClasses:
+						decomposeSet.add(tag)
+			elif tag.name == "h3":
+				if tag.attrs.get('class'):
+				 	if tag.attrs.get('class')[0] in h3Classes:
+						decomposeSet.add(tag)
+			elif tag.name == "h4":
+				if tag.attrs.get('class'):
+					if tag.attrs.get('class')[0] in h4Classes:
+						decomposeSet.add(tag)
+			elif tag.name == "p":
+				if tag.attrs.get('class'):
+					if tag.attrs.get('class')[0] in pClasses:
+						decomposeSet.add(tag)
+			elif tag.name == "div":
+				if tag.attrs.get('class'):
+					if tag.attrs.get('class')[0] in divClasses:
+						decomposeSet.add(tag)
+				if tag.attrs.get('id'):
+					if tag.attrs.get('id') in divIds:
+						decomposeSet.add(tag)
+			elif tag.name == "span":
+				if tag.attrs.get('id'):
+					if tag.attrs.get('id') in spanIds:
+						decomposeSet.add(tag)
+			elif tag.name in deletableTags:
+				decomposeSet.add(tag)
+			elif tag.name in extraneousTags:
+				decomposeSet.add(tag)
 
-		for divClass in divClasses:
-			tags = xmlSoup.findAll("div", {"class" : divClass})
-			for tag in tags:
-				try:
-					tag.extract()
-				except AttributeError:
-					pass
+		for tag in decomposeSet:
+			tag.decompose()
 
-		for divId in divIds:
-			tags = xmlSoup.findAll("div", {"id" : divId})
-			for tag in tags:
-				try:
-					tag.extract()
-				except AttributeError:
-					pass
-
-		for spanId in spanIds:
-			tags = xmlSoup.findAll("span", {"id" : spanId})
-			for tag in tags:
-				try:
-					tag.extract()
-				except AttributeError:
-					pass
-
-		for commentType in commentTypes:
-			tags = xmlSoup.findAll(text=lambda text:isinstance(text, Comment) and commentType in text)
-			for tag in tags:
-				try:
-					tag.extract()
-				except AttributeError:
-					pass
-
-		for deletableTag in deletableTags:
-			tags = xmlSoup.findAll(deletableTag)
-			for tag in tags:
-				try:
-					tag.extract()
-				except AttributeError:
-					pass
-
-		for extraneousTag in extraneousTags:
-			tags = xmlSoup.findAll(extraneousTag)
-			for tag in tags:
-				tag.replaceWith(tag.text)
-
-		return
+		print "\t%f" % (time.time() - loopStart)
