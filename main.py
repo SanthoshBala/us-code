@@ -31,6 +31,6 @@ def buildReadableArchiveHtmlFiles():
 			prettyArchiveFileName = "usc-%d-%d.html" % (year, title)
 
 			parser = OlrcParser(rawArchiveFileDir + rawArchiveFileName)
-			parser.parse(prettyArchiveFileName)
+			parser.parse(prettyArchiveFileDir + prettyArchiveFileName)
 
 	return
