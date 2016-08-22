@@ -37,3 +37,6 @@
 	* Created beginnings of an end-to-end pipeline, and tested publishing to github.io
 	* Discovered that there are other complex non-statutory elements that need to be removed, including repealed section
 		headers. Might just need to do something custom for that case =(
+
+# 08.07.2016
+	* field-start:repealedhead – need to remove <h3> section-head's which have been repealed

@@ -44,19 +44,12 @@ class OlrcParser:
 		
 		xmlSoup = BeautifulSoup(self.inFile, OlrcParser.XML_PARSER)
 
-		print "_deleteEditorialNotes"
 		self._deleteEditorialNotes(xmlSoup)
-		print "_deleteInlineStyles"
 		self._deleteInlineStyles(xmlSoup)
-		print "_injectStyleSheet"
 		self._injectStyleSheet(xmlSoup)
-		print "_injectMetaViewportTag"
 		self._injectMetaViewportTag(xmlSoup)
-		print "_titleCaseTitleAndChapter"
 		self._titleCaseTitleAndChapter(xmlSoup)
-		print "_dotSectionHeaders"
 		self._dotSectionHeaders(xmlSoup)
-		print "_removeSourceParentheses"
 		self._removeSourceParentheses(xmlSoup)
 
 		outFile = open(outFileName, 'w')
@@ -106,11 +99,14 @@ class OlrcParser:
 		subchapters = xmlSoup.findAll("h3", {"class" : "subchapter-head"})
 		for subchapter in subchapters:
 			# Clean em dash and title case
-			[prefix, suffix] = subchapter.text.split(u"\u2014")
-			[heading, number] = prefix.split(" ", 1)
-			heading = titlecase(heading.lower())
-			suffix = titlecase(suffix.lower())
-			subchapter.string = u". ".join([titlecase(s.lower()) for s in subchapter.text.split(u"\u2014")])
+			if u"\u2014" in subchapter:
+				[prefix, suffix] = subchapter.text.split(u"\u2014")
+				[heading, number] = prefix.split(" ", 1)
+				heading = titlecase(heading.lower())
+				suffix = titlecase(suffix.lower())
+				subchapter.string = u". ".join([titlecase(s.lower()) for s in subchapter.text.split(u"\u2014")])
+			else:
+				subchapter.string = titlecase(subchapter.text.lower())
 		
 		return
 
@@ -172,41 +168,36 @@ class OlrcParser:
 					comment.extract()
 
 		tags = xmlSoup.findAll(True)
-		loopStart = time.time()
 		decomposeSet = set()
 		for tag in tags:
-			iterStart = time.time()
 			if tag.name == "table":
 				if tag.attrs.get('class'):
 					if tag.attrs.get('class')[0] in tableClasses:
-						decomposeSet.add(tag)
+						tag.extract()
 			elif tag.name == "h3":
 				if tag.attrs.get('class'):
 				 	if tag.attrs.get('class')[0] in h3Classes:
-						decomposeSet.add(tag)
+						tag.extract()
 			elif tag.name == "h4":
 				if tag.attrs.get('class'):
 					if tag.attrs.get('class')[0] in h4Classes:
-						decomposeSet.add(tag)
+						tag.extract()
 			elif tag.name == "p":
 				if tag.attrs.get('class'):
 					if tag.attrs.get('class')[0] in pClasses:
-						decomposeSet.add(tag)
+						tag.extract()
 			elif tag.name == "div":
 				if tag.attrs.get('class'):
 					if tag.attrs.get('class')[0] in divClasses:
-						decomposeSet.add(tag)
+						tag.extract()
 				if tag.attrs.get('id'):
 					if tag.attrs.get('id') in divIds:
-						decomposeSet.add(tag)
+						tag.extract()
 			elif tag.name == "span":
 				if tag.attrs.get('id'):
 					if tag.attrs.get('id') in spanIds:
-						decomposeSet.add(tag)
+						tag.extract()
 			elif tag.name in deletableTags:
-				decomposeSet.add(tag)
+				tag.extract()
 			elif tag.name in extraneousTags:
-				decomposeSet.add(tag)
-
-		for tag in decomposeSet:
-			tag.decompose()
+				tag.extract()

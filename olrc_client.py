@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# olrc-driver.py
+# olrc-client.py
 #
 # The OLRC (Office of the Law Revision Counsel) maintains the U.S. Code and
 # Public Laws. They publish data in a variety of formats, but this class
@@ -104,14 +104,12 @@ class OlrcClient:
 		# TODO(santhoshbala): Generalize this condition to work for non-XHTML file formats.
 		if OlrcClient.ARCHIVE_NAME_FORMAT_XHTML % (year, title) in existingFiles:
 			pass
-			#print "\t%d Title %d already downloaded." % (year, title)
 		else:
 			if format == OlrcClient.CODE_FORMAT_GPO:
 				downloadUrl = baseDownloadUrl % (year, title)
 			else:
 				downloadUrl = baseDownloadUrl % (year, year, title)
 
-			print "\tDownloading %d Title %d as %s" % (year, title, format)
 			self._downloadWebDocument(downloadUrl, destDir)
 
 		return
@@ -134,7 +132,6 @@ class OlrcClient:
 		# Download archives for all years.
 		for year in range(OlrcClient.FIRST_ANNUAL_ARCHIVE_YEAR,
 							OlrcClient.LAST_ANNUAL_ARCHIVE_YEAR + 1):
-			print year
 			self.fetchAnnualArchive(year=year, format=format)
 
 		return
