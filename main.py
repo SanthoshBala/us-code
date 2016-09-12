@@ -29,7 +29,7 @@ def buildReadableArchiveHtmlFiles():
 		for title in range(1, numTitles + 1):
 			print "\t%d" % title
 			rawArchiveFileName = client.ARCHIVE_NAME_FORMAT_XHTML % (year, title)
-			prettyArchiveFileName = "usc-%d-%d.html" % (year, title)
+			prettyArchiveFileName = "usc-%d-%02d.html" % (year, title)
 
 			parser = OlrcParser(rawArchiveFileDir + rawArchiveFileName)
 			parser.parse(prettyArchiveFileDir + prettyArchiveFileName)
