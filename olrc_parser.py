@@ -6,7 +6,7 @@
 # Public Laws. They publish data in a variety of formats, but this class
 # provides all the utility necessary to parse and manipulator that data.
 
-from bs4 import BeautifulSoup, Comment
+from bs4 import BeautifulSoup, Comment, NavigableString
 from titlecase import titlecase
 import time
 
@@ -42,7 +42,9 @@ class OlrcParser:
 
 	def _sanitizeXML(self, outFileName):
 		
-		xmlSoup = BeautifulSoup(self.inFile, OlrcParser.XML_PARSER)
+		start = time.time()
+
+		xmlSoup = BeautifulSoup(self.inFile, "html.parser")
 
 		self._deleteEditorialNotes(xmlSoup)
 		self._deleteInlineStyles(xmlSoup)
@@ -55,6 +57,8 @@ class OlrcParser:
 		outFile = open(outFileName, 'w')
 		outFile.write(xmlSoup.prettify("utf-8"))
 		outFile.close()
+
+		print time.time() - start
 
 		return
 
@@ -89,7 +93,7 @@ class OlrcParser:
 		titles = xmlSoup.findAll("h1", {"class" : "usc-title-head"})
 		for title in titles:
 			# Clean em dash and title case
-			title.string = u" \u2014 ".join([titlecase(s.lower()) for s in title.text.split(u"\u2014")])
+			title.string = u" \u2014 ".join([titlecase(s.lower()) for s in title.text.split(u"\u2014")])	
 
 		chapters = xmlSoup.findAll("h3", {"class" : "chapter-head"})
 		for chapter in chapters:
@@ -97,14 +101,15 @@ class OlrcParser:
 			chapter.string = u". ".join([titlecase(s.lower()) for s in chapter.text.split(u"\u2014")])
 
 		subchapters = xmlSoup.findAll("h3", {"class" : "subchapter-head"})
+
 		for subchapter in subchapters:
 			# Clean em dash and title case
-			if u"\u2014" in subchapter:
+			if u"\u2014" in subchapter.text:
 				[prefix, suffix] = subchapter.text.split(u"\u2014")
 				[heading, number] = prefix.split(" ", 1)
 				heading = titlecase(heading.lower())
 				suffix = titlecase(suffix.lower())
-				subchapter.string = u". ".join([titlecase(s.lower()) for s in subchapter.text.split(u"\u2014")])
+				subchapter.string = u"%s %s\u2014%s" % (heading, number, suffix)
 			else:
 				subchapter.string = titlecase(subchapter.text.lower())
 		
@@ -147,7 +152,7 @@ class OlrcParser:
 		divIds = set(["footer", "resizeWindow", "menu", "menu_homeLink", "header"])
 		spanIds = set(["resizeWindow"])
 		deletableTags = set(["br", "meta", "script", "noscript", "link", "sup"])
-		extraneousTags = set(["strong"])
+		extraneousTags = set(["strong", "cap-smallcap"])
 		commentTypes = set(["notes", "repeal-note", "secref", "sectionreferredto", "amendment-note", 
 						"crossreference-note", "miscellaneous-note", "sourcecredit",
 						"footnote", "analysis", "effectivedate-note", "documentid",
@@ -200,4 +205,4 @@ class OlrcParser:
 			elif tag.name in deletableTags:
 				tag.extract()
 			elif tag.name in extraneousTags:
-				tag.extract()
+				tag.replaceWith(NavigableString(tag.text))
