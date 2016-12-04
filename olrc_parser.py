@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup, Comment, NavigableString
 from lxml import etree
 from titlecase import titlecase
 import time
+import io
 
 # Class for parsing OLRC data, based on BeautifulSoup.
 class OlrcParser:
@@ -48,7 +49,6 @@ class OlrcParser:
 			self._sanitizeXML(outFileName)
 			lxmlParser = etree.XMLParser(remove_comments=True, recover=True)
 
-
 		return
 
 	def _sanitizeXML(self, outFileName):
@@ -73,8 +73,11 @@ class OlrcParser:
 			# HTML entities like &mdash;
 			lxmlParser = etree.XMLParser(remove_comments=True, recover=True)
 			lxmlTree = etree.parse(self.inFile, lxmlParser)
-
+			#lxmlTree = self._removeNamespaces(lxmlTree)
 			self._deleteEditorialNotes(lxmlTree)
+			self._deleteInlineStyles(lxmlTree)
+			self._injectStyleSheet(lxmlTree)
+			self._injectMetaViewportTag(lxmlTree)
 			lxmlTree.write(outFileName)
 
 		print time.time() - start
@@ -82,10 +85,16 @@ class OlrcParser:
 		return
 
 	def _injectMetaViewportTag(self, xmlSoup):
-		head = xmlSoup.find("head")
-		metaTag = xmlSoup.new_tag("meta", content="width=device-width, initial-scale=1")
-		metaTag.attrs['name'] = "viewport"
-		head.insert(2, metaTag)
+		if self.parser == self.LXML_PARSER:
+			head = xmlSoup.find("{http://www.w3.org/1999/xhtml}head")
+			mvt = etree.SubElement(head, "meta",
+									attrib={"content":"width=device-width, initial-scale=1"})
+
+		if self.parser == self.BS4_PARSER:
+			head = xmlSoup.find("head")
+			metaTag = xmlSoup.new_tag("meta", content="width=device-width, initial-scale=1")
+			metaTag.attrs['name'] = "viewport"
+			head.insert(2, metaTag)
 
 		return
 
@@ -136,22 +145,68 @@ class OlrcParser:
 		return
 
 	def _injectStyleSheet(self, xmlSoup):
-		head = xmlSoup.find("head")
-		linkTag = xmlSoup.new_tag("link", rel="stylesheet", type="text/css", href="../../stylesheets/us-code-title.css")
-		head.insert(1, linkTag)
+		if self.parser == self.LXML_PARSER:
+			head = xmlSoup.find("{http://www.w3.org/1999/xhtml}head")
+			stylesheet = etree.SubElement(head, "link",
+											attrib={"rel":"stylesheet",
+											"type":"text/css",
+											"href":"../../stylesheets/us-code-title.css"})
+				
+		if self.parser == self.BS4_PARSER:
+			head = xmlSoup.find("head")
+			linkTag = xmlSoup.new_tag("link", rel="stylesheet", type="text/css", href="../../stylesheets/us-code-title.css")
+			head.insert(1, linkTag)
 
 		return
 
 	# Delete all inline styles to prepare for injecting new styles.
 	def _deleteInlineStyles(self, xmlSoup):
-		for tag in xmlSoup.recursiveChildGenerator():
-			try:
-				tag.attrs.pop('style', None)
-				tag.attrs.pop('width', None)
-			except AttributeError:
-				pass
+		if self.parser == self.LXML_PARSER:
+			lxmlTree = xmlSoup
+			for child in lxmlTree.iter():
+				child.attrib.pop('style', None)
+				child.attrib.pop('width', None)
+				
+		if self.parser == self.BS4_PARSER:
+			for tag in xmlSoup.recursiveChildGenerator():
+				try:
+					tag.attrs.pop('style', None)
+					tag.attrs.pop('width', None)
+				except AttributeError:
+					pass
 
 		return
+
+	# By default, parsing via LXML will leave namespace delcarations in
+	# the document. To simplify parsing, remove these.
+	def _removeNamespaces(self, lxmlTree):
+		xslt = '''<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+				<xsl:output method="xml" indent="no"/>
+
+				<xsl:template match="/|comment()|processing-instruction()">
+				    <xsl:copy>
+				      <xsl:apply-templates/>
+				    </xsl:copy>
+				</xsl:template>
+
+				<xsl:template match="*">
+				    <xsl:element name="{local-name()}">
+				      <xsl:apply-templates select="@*|node()"/>
+				    </xsl:element>
+				</xsl:template>
+
+				<xsl:template match="@*">
+				    <xsl:attribute name="{local-name()}">
+				      <xsl:value-of select="."/>
+				    </xsl:attribute>
+				</xsl:template>
+				</xsl:stylesheet>
+				'''
+		xsltDoc = etree.parse(io.BytesIO(xslt))
+		transform = etree.XSLT(xsltDoc)
+		lxmlTree = transform(lxmlTree)
+
+		return lxmlTree
 
 	# USC XML files contain a variety of editorial notes, including notes about
 	# (1) amendments
@@ -172,7 +227,10 @@ class OlrcParser:
 		divIds = set(["footer", "resizeWindow", "menu", "menu_homeLink", "header"])
 		spanIds = set(["resizeWindow"])
 		deletableTags = set(["br", "meta", "script", "noscript", "link", "sup"])
-		extraneousTags = set(["strong", "cap-smallcap"])
+		nsExtraneousTags = set(["{http://www.w3.org/1999/xhtml}strong", 
+								"{http://www.w3.org/1999/xhtml}cap-smallcap", 
+								"{http://www.w3.org/1999/xhtml}em"])
+		extraneousTags = set(["strong", "cap-smallcap", "em"])
 		commentTypes = set(["notes", "repeal-note", "secref", "sectionreferredto", "amendment-note", 
 						"crossreference-note", "miscellaneous-note", "sourcecredit",
 						"footnote", "analysis", "effectivedate-note", "documentid",
@@ -185,41 +243,49 @@ class OlrcParser:
 						"historicalandrevision-note", "terminationdate-note", "construction-note"])
 
 		if self.parser == self.LXML_PARSER:
-			for child in xmlSoup.getroot():
+			lxmlTree = xmlSoup
+			root = lxmlTree.getroot()
+			removableNodes = set()
+			for child in lxmlTree.iter():
 				# HTML entities like &mdash are independent children in
 				# the tree, and have type "cython_function_or_method".
 				# Skip them.
-				if type(child.tag).__name__ == 'cython_function_or_method':
+				if type(child.tag).__name__ == 'cython_function_or_method':	
 					continue					
 
 				# Strip namespace declaration from tag name	
+				print child.tag
 				tagName = child.tag.split("}")[1]
+				
 
 				if tagName == "table":
-					if child.attrib.get('class') in tableClasses:
-						child.getparent().remove(child)
+				 	if child.attrib.get('class') in tableClasses:
+				 		removableNodes.add(child)
 				elif tagName == "h3":
-					if child.attrib.get('class') in h3Classes:
-						child.getparent().remove(child)
+				 	if child.attrib.get('class') in h3Classes:
+				 		removableNodes.add(child)
 				elif tagName == "h4":
 					if child.attrib.get('class') in h4Classes:
-						child.getparent().remove(child)
+						removableNodes.add(child)
 				elif tagName == "p":
 					if child.attrib.get('class') in pClasses:
-						child.getparent().remove(child)
+						removableNodes.add(child)
 				elif tagName == "div":
 					if child.attrib.get('class') in divClasses:
-						child.getparent().remove(child)
-					if child.attrib.get('id') in divIds:
-						child.getparent().remove(child)
+						removableNodes.add(child)
+				 	if child.attrib.get('id') in divIds:
+				 		removableNodes.add(child)
 				elif tagName == "span":
 					if child.attrib.get('id') in spanIds:
-						child.getparent().remove(child)
+						removableNodes.add(child)
 				elif tagName in deletableTags:
-					child.getparent().remove(child)
+					removableNodes.add(child)
 			
-			etree.strip_tags(xmlSoup, extraneousTags)
+			for node in removableNodes:
+				node.getparent().remove(node)
 
+			for extraneousTag in nsExtraneousTags:
+				etree.strip_tags(lxmlTree, extraneousTag)
 
 		elif self.parser == self.BS4_PARSER:
 			commentTags = xmlSoup.findAll(text=lambda text:isinstance(text, Comment))
