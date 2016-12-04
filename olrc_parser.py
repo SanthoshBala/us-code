@@ -7,6 +7,7 @@
 # provides all the utility necessary to parse and manipulator that data.
 
 from bs4 import BeautifulSoup, Comment, NavigableString
+from lxml import etree
 from titlecase import titlecase
 import time
 
@@ -19,44 +20,62 @@ class OlrcParser:
 	CODE_FORMAT_XHTML = "xhtml"
 
 	# Parser Types
-	XML_PARSER = "lxml"
+	BS4_XML_PARSER = "lxml"
+	BS4_PARSER = "bs4"
+	LXML_PARSER = "lxml"
 
 	def __init__(self, inFileName, format=CODE_FORMAT_XHTML):
 		self.format = format
+		self.parser = self.LXML_PARSER
 		self.inFile = open(inFileName)
 
 		return
 
 	# Parse the file provided as input and write the output to outfile.
 	def parse(self, outFileName):
-		if self.format == self.CODE_FORMAT_XHTML:
+		if self.parser == self.BS4_PARSER:
+			if self.format == self.CODE_FORMAT_XHTML:
+				self._sanitizeXML(outFileName)
+			elif self.format == self.CODE_FORMAT_PDF:
+				# TODO(santhoshbala): Write PDF parser.
+				print "TODO(santhoshbala): Write PDF parser."
+				pass
+			else:
+				# TODO(santhoshbala): Write GPO parser.
+				print "TODO(santhoshbala): Write GPO parser."
+				pass
+		elif self.parser == self.LXML_PARSER:
 			self._sanitizeXML(outFileName)
-		elif self.format == self.CODE_FORMAT_PDF:
-			# TODO(santhoshbala): Write PDF parser.
-			pass
-		else:
-			# TODO(santhoshbala): Write GPO parser.
-			pass
+			lxmlParser = etree.XMLParser(remove_comments=True, recover=True)
+
 
 		return
 
 	def _sanitizeXML(self, outFileName):
 		
 		start = time.time()
+		if self.parser == self.BS4_PARSER:
+			xmlSoup = BeautifulSoup(self.inFile, BS4_XML_PARSER)
 
-		xmlSoup = BeautifulSoup(self.inFile, "html.parser")
+			self._deleteEditorialNotes(xmlSoup)
+			self._deleteInlineStyles(xmlSoup)
+			self._injectStyleSheet(xmlSoup)
+			self._injectMetaViewportTag(xmlSoup)
+			self._titleCaseTitleAndChapter(xmlSoup)
+			self._dotSectionHeaders(xmlSoup)
+			self._removeSourceParentheses(xmlSoup)
 
-		self._deleteEditorialNotes(xmlSoup)
-		self._deleteInlineStyles(xmlSoup)
-		self._injectStyleSheet(xmlSoup)
-		self._injectMetaViewportTag(xmlSoup)
-		self._titleCaseTitleAndChapter(xmlSoup)
-		self._dotSectionHeaders(xmlSoup)
-		self._removeSourceParentheses(xmlSoup)
+			outFile = open(outFileName, 'w')
+			outFile.write(xmlSoup.prettify("utf-8"))
+			outFile.close()
+		elif self.parser == self.LXML_PARSER:
+			# Set recover=True so that parser doesn't fail on encountering
+			# HTML entities like &mdash;
+			lxmlParser = etree.XMLParser(remove_comments=True, recover=True)
+			lxmlTree = etree.parse(self.inFile, lxmlParser)
 
-		outFile = open(outFileName, 'w')
-		outFile.write(xmlSoup.prettify("utf-8"))
-		outFile.close()
+			self._deleteEditorialNotes(lxmlTree)
+			lxmlTree.write(outFileName)
 
 		print time.time() - start
 
@@ -105,7 +124,8 @@ class OlrcParser:
 		for subchapter in subchapters:
 			# Clean em dash and title case
 			if u"\u2014" in subchapter.text:
-				[prefix, suffix] = subchapter.text.split(u"\u2014")
+				print subchapter.text
+				[prefix, suffix] = subchapter.text.split(u"\u2014", 1)
 				[heading, number] = prefix.split(" ", 1)
 				heading = titlecase(heading.lower())
 				suffix = titlecase(suffix.lower())
@@ -164,45 +184,83 @@ class OlrcParser:
 						"function-transfer-note", "effectivedate-terminationdate-note",
 						"historicalandrevision-note", "terminationdate-note", "construction-note"])
 
-		commentTags = xmlSoup.findAll(text=lambda text:isinstance(text, Comment))
+		if self.parser == self.LXML_PARSER:
+			for child in xmlSoup.getroot():
+				# HTML entities like &mdash are independent children in
+				# the tree, and have type "cython_function_or_method".
+				# Skip them.
+				if type(child.tag).__name__ == 'cython_function_or_method':
+					continue					
 
-		loopStart = time.time()
-		for comment in commentTags:
-			for commentType in commentTypes:
-				if commentType in comment:
-					comment.extract()
+				# Strip namespace declaration from tag name	
+				tagName = child.tag.split("}")[1]
 
-		tags = xmlSoup.findAll(True)
-		decomposeSet = set()
-		for tag in tags:
-			if tag.name == "table":
-				if tag.attrs.get('class'):
-					if tag.attrs.get('class')[0] in tableClasses:
-						tag.extract()
-			elif tag.name == "h3":
-				if tag.attrs.get('class'):
-				 	if tag.attrs.get('class')[0] in h3Classes:
-						tag.extract()
-			elif tag.name == "h4":
-				if tag.attrs.get('class'):
-					if tag.attrs.get('class')[0] in h4Classes:
-						tag.extract()
-			elif tag.name == "p":
-				if tag.attrs.get('class'):
-					if tag.attrs.get('class')[0] in pClasses:
-						tag.extract()
-			elif tag.name == "div":
-				if tag.attrs.get('class'):
-					if tag.attrs.get('class')[0] in divClasses:
-						tag.extract()
-				if tag.attrs.get('id'):
-					if tag.attrs.get('id') in divIds:
-						tag.extract()
-			elif tag.name == "span":
-				if tag.attrs.get('id'):
-					if tag.attrs.get('id') in spanIds:
-						tag.extract()
-			elif tag.name in deletableTags:
-				tag.extract()
-			elif tag.name in extraneousTags:
-				tag.replaceWith(NavigableString(tag.text))
+				if tagName == "table":
+					if child.attrib.get('class') in tableClasses:
+						child.getparent().remove(child)
+				elif tagName == "h3":
+					if child.attrib.get('class') in h3Classes:
+						child.getparent().remove(child)
+				elif tagName == "h4":
+					if child.attrib.get('class') in h4Classes:
+						child.getparent().remove(child)
+				elif tagName == "p":
+					if child.attrib.get('class') in pClasses:
+						child.getparent().remove(child)
+				elif tagName == "div":
+					if child.attrib.get('class') in divClasses:
+						child.getparent().remove(child)
+					if child.attrib.get('id') in divIds:
+						child.getparent().remove(child)
+				elif tagName == "span":
+					if child.attrib.get('id') in spanIds:
+						child.getparent().remove(child)
+				elif tagName in deletableTags:
+					child.getparent().remove(child)
+			
+			etree.strip_tags(xmlSoup, extraneousTags)
+
+
+		elif self.parser == self.BS4_PARSER:
+			commentTags = xmlSoup.findAll(text=lambda text:isinstance(text, Comment))
+
+			loopStart = time.time()
+			for comment in commentTags:
+				for commentType in commentTypes:
+					if commentType in comment:
+						comment.extract()
+
+			tags = xmlSoup.findAll(True)
+			decomposeSet = set()
+			for tag in tags:
+				if tag.name == "table":
+					if tag.attrs.get('class'):
+						if tag.attrs.get('class')[0] in tableClasses:
+							tag.extract()
+				elif tag.name == "h3":
+					if tag.attrs.get('class'):
+					 	if tag.attrs.get('class')[0] in h3Classes:
+							tag.extract()
+				elif tag.name == "h4":
+					if tag.attrs.get('class'):
+						if tag.attrs.get('class')[0] in h4Classes:
+							tag.extract()
+				elif tag.name == "p":
+					if tag.attrs.get('class'):
+						if tag.attrs.get('class')[0] in pClasses:
+							tag.extract()
+				elif tag.name == "div":
+					if tag.attrs.get('class'):
+						if tag.attrs.get('class')[0] in divClasses:
+							tag.extract()
+					if tag.attrs.get('id'):
+						if tag.attrs.get('id') in divIds:
+							tag.extract()
+				elif tag.name == "span":
+					if tag.attrs.get('id'):
+						if tag.attrs.get('id') in spanIds:
+							tag.extract()
+				elif tag.name in deletableTags:
+					tag.extract()
+				elif tag.name in extraneousTags:
+					tag.replaceWith(NavigableString(tag.text))
