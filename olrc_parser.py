@@ -11,6 +11,27 @@ from lxml import etree
 from titlecase import titlecase
 import time
 import io
+import re, htmlentitydefs
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+
+entities = [
+    ('&nbsp;', u'\u00a0'),
+    ('&acirc;', u'\u00e2'),
+    ('&mdash;', u'\u2014'),
+    ('&lsquo;', u'\u2018'),
+    ('&rsquo;', u'\u2019'),
+    ('&sect;', u'\u00A7'),
+    ('&ldquo;', u'\u201C'),
+    ('&rdquo;', u'\u201D'),
+    ('&ndash;', u'\u2013'),
+    ('&', u'\u0026'),
+    ('<', u'\u003C'),
+    ('>', u'\u003E'),
+    ('&minus;', u'\u002D')
+    ]
 
 # Class for parsing OLRC data, based on BeautifulSoup.
 class OlrcParser:
@@ -29,6 +50,11 @@ class OlrcParser:
 		self.format = format
 		self.parser = self.LXML_PARSER
 		self.inFile = open(inFileName)
+		
+		#self.inFileRead = self.inFile.read()
+		#for before, after in entities:
+		#	self.inFileRead = self.inFileRead.replace(before, after.encode('utf-8'))
+#		self.inFileRead = self._unescape(self.inFileRead.decode('utf-8'))
 
 		return
 
@@ -47,7 +73,6 @@ class OlrcParser:
 				pass
 		elif self.parser == self.LXML_PARSER:
 			self._sanitizeXML(outFileName)
-			lxmlParser = etree.XMLParser(remove_comments=True, recover=True)
 
 		return
 
@@ -71,22 +96,26 @@ class OlrcParser:
 		elif self.parser == self.LXML_PARSER:
 			# Set recover=True so that parser doesn't fail on encountering
 			# HTML entities like &mdash;
-			lxmlParser = etree.XMLParser(remove_comments=True, recover=True)
+			#lxmlParser = etree.XMLParser(remove_comments=True, resolve_entities=False)
+			lxmlParser = etree.HTMLParser(remove_blank_text=True, remove_comments=True)
 			lxmlTree = etree.parse(self.inFile, lxmlParser)
 			#lxmlTree = self._removeNamespaces(lxmlTree)
 			self._deleteEditorialNotes(lxmlTree)
 			self._deleteInlineStyles(lxmlTree)
 			self._injectStyleSheet(lxmlTree)
 			self._injectMetaViewportTag(lxmlTree)
+			self._titleCaseTitleAndChapter(lxmlTree)
+			self._dotSectionHeaders(lxmlTree)
+			self._removeSourceParentheses(lxmlTree)
 			lxmlTree.write(outFileName)
 
-		print time.time() - start
+		print "\t\t%f" % (time.time() - start)
 
 		return
 
 	def _injectMetaViewportTag(self, xmlSoup):
 		if self.parser == self.LXML_PARSER:
-			head = xmlSoup.find("{http://www.w3.org/1999/xhtml}head")
+			head = xmlSoup.find("head")
 			mvt = etree.SubElement(head, "meta",
 									attrib={"content":"width=device-width, initial-scale=1"})
 
@@ -99,54 +128,85 @@ class OlrcParser:
 		return
 
 	def _removeSourceParentheses(self, xmlSoup):
-		sourceCredits = xmlSoup.findAll("p", {"class" : "source-credit"})
-
-		for sourceCredit in sourceCredits:
-			# Strip parentheses and new lines
-			sourceCredit.string = sourceCredit.text.strip()[1:-1]
+		if self.parser == self.LXML_PARSER:
+			sourceCredits = xmlSoup.findall("//p[@class='source-credit']")
+			for sourceCredit in sourceCredits:
+				# Strip parentheses and new lines
+				sourceCredit.text = sourceCredit.text.strip()[1:-1]
+		if self.parser == self.BS4_PARSER:
+			sourceCredits = xmlSoup.findAll("p", {"class" : "source-credit"})
+			for sourceCredit in sourceCredits:
+				# Strip parentheses and new lines
+				sourceCredit.string = sourceCredit.text.strip()[1:-1]
 
 		return
 
 	def _dotSectionHeaders(self, xmlSoup):
-		sectionHeaders = xmlSoup.findAll("h3", {"class" : "section-head"})
-
-		for sectionHeader in sectionHeaders:
-			# Replace period with middle dot (only first instance)
-			sectionHeader.string = sectionHeader.text.replace(u".", u" \u00B7", 1)
+		if self.parser == self.LXML_PARSER:
+			sectionHeaders = xmlSoup.findall("//h3[@class='section-head']")
+			for sectionHeader in sectionHeaders:
+				# Replace period with middle dot (only first instance)
+				sectionHeader.text = sectionHeader.text.replace(u".", u" \u00B7", 1)
+		if self.parser == self.BS4_PARSER:
+			sectionHeaders = xmlSoup.findAll("h3", {"class" : "section-head"})
+			for sectionHeader in sectionHeaders:
+				# Replace period with middle dot (only first instance)
+				sectionHeader.string = sectionHeader.text.replace(u".", u" \u00B7", 1)
 
 		return
 
 	def _titleCaseTitleAndChapter(self, xmlSoup):
+		if self.parser == self.LXML_PARSER:
+			titles = xmlSoup.findall("//h1[@class='usc-title-head']")
+			for title in titles:
+				title.text = u" \u2014 ".join([titlecase(s.lower()) for s in title.text.split(u"\u2014")])
 
-		titles = xmlSoup.findAll("h1", {"class" : "usc-title-head"})
-		for title in titles:
-			# Clean em dash and title case
-			title.string = u" \u2014 ".join([titlecase(s.lower()) for s in title.text.split(u"\u2014")])	
+			chapters = xmlSoup.findall("//h3[@class='chapter-head']")
+			for chapter in chapters:
+				# Clean em dash and title case
+				chapter.text = u". ".join([titlecase(s.lower()) for s in chapter.text.split(u"\u2014")])
 
-		chapters = xmlSoup.findAll("h3", {"class" : "chapter-head"})
-		for chapter in chapters:
-			# Clean em dash and title case
-			chapter.string = u". ".join([titlecase(s.lower()) for s in chapter.text.split(u"\u2014")])
+			subchapters = xmlSoup.findall("//h3[@class='subchapter-head']")
+			for subchapter in subchapters:
+				# Clean em dash and title case
+				if u"\u2014" in subchapter.text:
+					[prefix, suffix] = subchapter.text.split(u"\u2014", 1)
+					[heading, number] = prefix.split(" ", 1)
+					heading = titlecase(heading.lower())
+					suffix = titlecase(suffix.lower())
+					subchapter.text = u"%s %s\u2014%s" % (heading, number, suffix)
+				else:
+					subchapter.text = titlecase(subchapter.text.lower())
 
-		subchapters = xmlSoup.findAll("h3", {"class" : "subchapter-head"})
+		if self.parser == self.BS4_PARSER:
+			titles = xmlSoup.findAll("h1", {"class" : "usc-title-head"})
+			for title in titles:
+				# Clean em dash and title case
+				title.string = u" \u2014 ".join([titlecase(s.lower()) for s in title.text.split(u"\u2014")])	
 
-		for subchapter in subchapters:
-			# Clean em dash and title case
-			if u"\u2014" in subchapter.text:
-				print subchapter.text
-				[prefix, suffix] = subchapter.text.split(u"\u2014", 1)
-				[heading, number] = prefix.split(" ", 1)
-				heading = titlecase(heading.lower())
-				suffix = titlecase(suffix.lower())
-				subchapter.string = u"%s %s\u2014%s" % (heading, number, suffix)
-			else:
-				subchapter.string = titlecase(subchapter.text.lower())
+			chapters = xmlSoup.findAll("h3", {"class" : "chapter-head"})
+			for chapter in chapters:
+				# Clean em dash and title case
+				chapter.string = u". ".join([titlecase(s.lower()) for s in chapter.text.split(u"\u2014")])
+
+			subchapters = xmlSoup.findAll("h3", {"class" : "subchapter-head"})
+
+			for subchapter in subchapters:
+				# Clean em dash and title case
+				if u"\u2014" in subchapter.text:
+					[prefix, suffix] = subchapter.text.split(u"\u2014", 1)
+					[heading, number] = prefix.split(" ", 1)
+					heading = titlecase(heading.lower())
+					suffix = titlecase(suffix.lower())
+					subchapter.string = u"%s %s\u2014%s" % (heading, number, suffix)
+				else:
+					subchapter.string = titlecase(subchapter.text.lower())
 		
 		return
 
 	def _injectStyleSheet(self, xmlSoup):
 		if self.parser == self.LXML_PARSER:
-			head = xmlSoup.find("{http://www.w3.org/1999/xhtml}head")
+			head = xmlSoup.find("head")
 			stylesheet = etree.SubElement(head, "link",
 											attrib={"rel":"stylesheet",
 											"type":"text/css",
@@ -208,6 +268,33 @@ class OlrcParser:
 
 		return lxmlTree
 
+	##
+	# Removes HTML or XML character references and entities from a text string.
+	#
+	# @param text The HTML (or XML) source text.
+	# @return The plain text, as a Unicode string, if necessary.
+
+	def _unescape(self, text):
+	    def fixup(m):
+	        text = m.group(0)
+	        if text[:2] == "&#":
+	            # character reference
+	            try:
+	                if text[:3] == "&#x":
+	                    return unichr(int(text[3:-1], 16))
+	                else:
+	                    return unichr(int(text[2:-1]))
+	            except ValueError:
+	                pass
+	        else:
+	            # named entity
+	            try:
+	                text = unichr(htmlentitydefs.name2codepoint[text[1:-1]])
+	            except KeyError:
+	                pass
+	        return text # leave as is
+	    return re.sub("&#?\w+;", fixup, text, flags=re.UNICODE)
+
 	# USC XML files contain a variety of editorial notes, including notes about
 	# (1) amendments
 	# (2) notes about other sections which refer to the current section
@@ -254,9 +341,7 @@ class OlrcParser:
 					continue					
 
 				# Strip namespace declaration from tag name	
-				print child.tag
-				tagName = child.tag.split("}")[1]
-				
+				tagName = child.tag
 
 				if tagName == "table":
 				 	if child.attrib.get('class') in tableClasses:
@@ -284,7 +369,7 @@ class OlrcParser:
 			for node in removableNodes:
 				node.getparent().remove(node)
 
-			for extraneousTag in nsExtraneousTags:
+			for extraneousTag in extraneousTags:
 				etree.strip_tags(lxmlTree, extraneousTag)
 
 		elif self.parser == self.BS4_PARSER:
