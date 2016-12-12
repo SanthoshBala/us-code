@@ -40,3 +40,7 @@
 
 # 08.07.2016
 	* field-start:repealedhead – need to remove <h3> section-head's which have been repealed
+
+# 09.11.2016
+	* Based on parser speed test, lxml is significantly faster than BeautifulSoup using lxml. Need to switch!
+	* 
