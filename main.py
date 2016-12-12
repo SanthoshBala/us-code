@@ -18,7 +18,6 @@ def buildReadableArchiveHtmlFiles():
 	print "PARSING ANNUAL ARCHIVES"
 	# For each year and title, parse it.
 	for year, numTitles in OlrcClient.YEAR_TITLE_COUNT_MAP.items():
-
 		print "%d" % year
 		rawArchiveFileDir = client.OLRC_ROOT_DIRECTORY + "archives/%s/%d/" % (client.CODE_FORMAT_XHTML, year)
 		prettyArchiveFileDir = "./archives/annual/%d/" % (year)
