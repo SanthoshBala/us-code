@@ -1,0 +1,28 @@
+h1 {
+	font-family: Helvetica, sans-serif;
+	font-weight: normal;
+}
+
+#page-intro {
+	font-family: Helvetica, sans-serif;
+	width: 600px;
+	text-align: justify;
+	margin: 0 auto;
+}
+
+th, td {
+    border: 1px solid black;
+    min-width: 288px;
+}
+
+
+table {
+    border: none;
+    border-spacing: 16px;
+}
+
+iframe {
+	width: 600px;
+	height: 480px;
+	border-style: none;
+}

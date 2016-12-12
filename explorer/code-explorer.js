@@ -26,11 +26,15 @@ var YEAR_TITLE_COUNT_MAP = {
 function refreshPreIframe() {
     var ifr = document.getElementById("pre-iframe");
     ifr.src = ifr.src;
+    ifr.style.height = "";
+    ifr.style.height = ifr.contentWindow.document.body.scrollHeight + 'px';
 }
 
 function refreshPostIframe() {
     var ifr = document.getElementById("post-iframe");
     ifr.src = ifr.src;
+    ifr.style.height = "";
+    ifr.style.height = ifr.contentWindow.document.body.scrollHeight + 'px';	
 }
 
 function updatePreYearAndOrTitle() {
@@ -39,6 +43,8 @@ function updatePreYearAndOrTitle() {
 	var updatedTitle = titleSelector.value
 	var ifr = document.getElementById("pre-iframe")
 	ifr.src = "../archives/annual/" + updatedYear + "/usc-" + updatedYear + "-" + updatedTitle + ".html"
+	ifr.style.height = "";
+    ifr.style.height = ifr.contentWindow.document.body.scrollHeight + 'px';
 
 	// Update # of titles that can be chosen
 	var newNumTitles = YEAR_TITLE_COUNT_MAP[updatedYear]
