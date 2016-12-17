@@ -32,6 +32,7 @@ entities = [
     ('>', u'\u003E'),
     ('&minus;', u'\u002D')
     ]
+import fileinput
 
 # Class for parsing OLRC data, based on BeautifulSoup.
 class OlrcParser:
@@ -74,6 +75,10 @@ class OlrcParser:
 		elif self.parser == self.LXML_PARSER:
 			self._sanitizeXML(outFileName)
 
+		for line in fileinput.FileInput(outFileName, inplace=1):
+			if line.rstrip():
+				print line
+
 		return
 
 	def _sanitizeXML(self, outFileName):
@@ -107,7 +112,7 @@ class OlrcParser:
 			self._titleCaseTitleAndChapter(lxmlTree)
 			self._dotSectionHeaders(lxmlTree)
 			self._removeSourceParentheses(lxmlTree)
-			lxmlTree.write(outFileName)
+			lxmlTree.write(outFileName, pretty_print=True)
 
 		print "\t\t%f" % (time.time() - start)
 
