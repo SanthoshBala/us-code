@@ -1,5 +1,5 @@
 *.pyc
 *~
 data/*
-archives/annual/*
+archives/*
 .DS_Store
