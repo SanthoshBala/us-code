@@ -69,7 +69,8 @@ class OlrcClient:
 		2012 : 51,
 		2013 : 51,
 		2014 : 54,
-		2015 : 22
+		2015 : 54,
+		2016 : 54
 	}
 
 	# For any functions which require a year as an input, use this internal
