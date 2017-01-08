@@ -1,0 +1,177 @@
+body {
+	margin: 0;
+	font-family: Helvetica, sans-serif;
+}
+
+/* PHONE */
+#content {
+	margin-left: 16px;
+	margin-right: 16px;
+	/*padding-top: 200px;*/
+}
+
+#site-header {
+	position: fixed;
+    background: white;
+    z-index: 999;
+    box-shadow: 0px 0px 4px 1px #8a8a8a;
+    height:48px;
+    width:100%;
+}
+
+#site-title {
+	line-height: 48px;
+	margin-left: 16px;
+}
+
+#archive-navigator {
+	/*position: fixed;*/
+    background: white;
+    z-index: 999;
+    /*box-shadow: 0px 0px 4px 1px #8a8a8a;*/
+    /*padding-top: 64px;*/
+    padding-bottom: 8px;
+    margin-left: 16px;
+    margin-right: 16px;
+
+}
+
+#legislative-summary {
+	overflow-x: auto;
+	border-spacing: 8px;
+}
+
+th {
+	white-space: nowrap;
+}
+
+.public-law-number {
+	/*width: 100px;	*/
+}
+
+.public-law-title {
+	min-width: 160px;
+}
+
+.public-law-description {
+	min-width: 320px;
+}
+
+.public-law-titles-amended {
+	min-width: 80px;
+}
+
+.public-law-date {
+	white-space: nowrap;
+	/*width: 100px;*/
+}
+
+#year-selector {
+	font-weight: normal;
+	font-size: 22pt;
+}
+
+#title-selector {
+	font-weight: normal;
+	font-size: 12pt;
+}
+
+#num-insertions {
+	font-weight: bold;
+	color: #6C6389;
+}
+
+#num-deletions {
+	font-weight: bold;
+	color: #6C6389;
+}
+
+#page-title {
+	padding-top: 64px;
+	/*padding-bottom: 16px;*/
+}
+
+#page-title-text {
+	margin-top: 0px;
+	margin-bottom: 0px;
+	font-size: 22pt;
+	font-weight: normal;
+	text-align: center;
+}
+
+#title-year-overview {
+	/*padding-top: 16px;*/
+	padding-bottom: 16px;
+	margin-left: 16px;
+    margin-right: 16px;
+}
+
+#revisions-per-title-visualization {
+	overflow-x: auto;
+}
+
+#congress-overview {
+	padding-top: 16px;
+	padding-bottom: 16px;
+	margin-left: 16px;
+	margin-right: 16px;
+}
+
+#section-title {
+	padding-bottom: 16px;
+}
+
+#section-title-text {
+	margin-top: 0px;
+	margin-bottom: 0px;
+	font-size: 22pt;
+	font-weight: normal;
+	text-align: center;
+}
+
+a {
+	text-decoration: none;
+}
+
+hr {
+	margin-left: 32px;
+	margin-right: 32px;
+}
+
+.position-title {
+	font-style: italic;;
+}
+
+.branch-title {
+	font-weight: bold;
+}
+
+.democrat-d {
+	color: #00AEF3;
+}
+
+.independent-i {
+	color: #777777;
+}
+
+.republican-r {
+	color: #D8171E;
+}
+
+/* TABLET */
+@media screen and (min-device-width: 600px) and (max-device-width: 768px) {
+	/*#content {
+		font-family: Helvetica, sans-serif;	
+		width: 540px;
+		margin: 0 auto;
+	}*/
+}
+
+/* DESKTOP */
+@media screen and (min-device-width: 768px) {
+	#content {	
+		width: 540px;
+		margin: 0 auto;
+	}
+
+}
