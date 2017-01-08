@@ -5,6 +5,7 @@
 from potus import *
 from chamber import *
 from congressperson import *
+from public_law import *
 
 ##### DATA INITIALIZATION #####
 
@@ -64,23 +65,67 @@ LEADERS = {
         "mcconnell" : Congressperson("Addison", "McConnell", "Senate", "R", "KY", 1985, middle_name="Mitchell", nickname="Mitch")
 }
 
+PUBLIC_LAWS = {
+        104 : {
+                u'104\u20141' : PublicLaw(u'104\u20141', 'Congressional Accountability Act', 'January 23, 1995', 'To make certain laws applicable to the legislative branch of the Federal Government.', [2, 31, 40]),
+                u'104\u20144' : PublicLaw(u'104\u20144', 'Unfunded Mandates Reform Act of 1995', 'March 22, 1995', 'To curb the practice of imposing unfunded Federal mandates on States and local governments; to strengthen the partnership between the Federal Government and State, local and tribal governments; to end the imposition, in the absence of full consideration by Congress, of Federal mandates on State, local, and tribal governments without adequate funding, in a manner that may displace other essential governmental priorities; and to ensure that the Federal Government pays the costs incurred by those governments in complying with certain requirements under Federal statutes and regulations, and for other purposes.', [2]),
+                u'104\u20146' : PublicLaw(u'104\u20146', 'Mexican Debt Disclosure Act of 1995', 'April 10, 1995', 'Making emergency supplemental appropriations and rescissions to preserve and enhance the military readiness of the Department of Defense for the fiscal year ending September 30, 1995, and for other purposes.', [43039]),
+                u'104\u201413' : PublicLaw(u'104\u201413', 'Paperwork Reduction Act of 1995', 'May 22, 1995', 'To further the goals of the Paperwork Reduction Act to have Federal agencies become more responsible and publicly accountable for reducing the burden of Federal paperwork on the public, and for other purposes.', [44]),
+                u'104\u201445' : PublicLaw(u'104\u201445', 'Jerusalem Embassy Act of 1995', 'November 8, 1995', 'To provide for the relocation of the United States Embassy in Israel to Jerusalem, and for other purposes.', []),
+                u'104\u201459' : PublicLaw(u'104\u201459', 'National Highway System Designation Act of 1995', 'November 28, 1995', 'To amend title 23, United States Code, to provide for the designation of the National Highway System, and for other purposes.', [16, 23, 42, 49]),
+                u'104\u201465' : PublicLaw(u'104\u201465', 'Lobbying Disclosure Act of 1995', 'December 19, 1995', 'To provide for the disclosure of lobbying activities to influence the Federal Government, and for other purposes.', [2, 5, 18, 22]),
+                u'104\u201467' : PublicLaw(u'104\u201467', 'Private Securities Litigation Reform Act of 1995', 'December 22, 1995', 'To reform Federal securities litigation, and for other purposes.', [15]),
+                u'104\u201488' : PublicLaw(u'104\u201488', 'ICC Termination Act of 1995', 'December 29, 1995', 'To abolish the Interstate Commerce Commission, to amend subtitle IV of title 49, United States Code, to reform economic regulation of transportation, and for other purposes.', [5, 11, 15, 16, 23, 26, 28, 39, 42, 49]),
+                u'104\u2014104' : PublicLaw(u'104\u2014104', 'Telecommunications Act of 1996', 'February 8, 1996', 'To promote competition and reduce regulation in order to secure lower prices and higher quality services for American telecommunications consumers and encourage the rapid deployment of new telecommunications technologies.', [15, 18, 47]),
+                u'104\u2014114' : PublicLaw(u'104\u2014114', 'Cuban Liberty and Democratic Solidarity (LIBERTAD) Act of 1996', 'March 12, 1996', 'To seek international sanctions against the Castro government in Cuba, to plan for support of a transition government leading to a democratically elected government in Cuba, and for other purposes.', [42938]),
+                u'104\u2014127' : PublicLaw(u'104\u2014127', 'Federal Agriculture Improvement and Reform Act of 1996', 'April 4, 1996', 'To modify the operation of certain agricultural programs.', [7, 15, 16, 20, 21, 22]),
+                u'104\u2014130' : PublicLaw(u'104\u2014130', 'Line Item Veto Act', 'April 9, 1996', 'To give the President line item veto authority with respect to appropriations, new direct spending, and limited tax benefits.', [2]),
+                u'104\u2014132' : PublicLaw(u'104\u2014132', 'Antiterrorism and Effective Death Penalty Act of 1996', 'April 24, 1996', 'To deter terrorism, provide justice for victims, provide for an effective death penalty, and for other purposes.', [8, 15, 18, 22, 28, 40, 42, 50]),
+                u'104\u2014142' : PublicLaw(u'104\u2014142', 'Mercury-Containing and Rechargeable Battery Management Act', 'May 13, 1996', 'To phase out the use of mercury in batteries and provide for the efficient and cost-effective collection and recycling or proper disposal of used nickel cadmium batteries, small sealed lead-acid batteries, and certain other batteries, and for other purposes.', [42]),
+                u'104\u2014145' : PublicLaw(u'104\u2014145', "Megan's Law", 'May 17, 1996', 'To amend the Violent Crime Control and Law Enforcement Act of 1994 to require the release of relevant information to protect the public from sexually violent offenders.', [42]),
+                u'104\u2014168' : PublicLaw(u'104\u2014168', 'Taxpayer Bill of Rights 2', 'July 30, 1996', 'To amend the Internal Revenue Code of 1986 to provide for increased taxpayer protections.', [26]),
+                u'104\u2014169' : PublicLaw(u'104\u2014169', 'National Gambling Impact Study Commission Act', 'August 3, 1996', 'To create the National Gambling Impact and Policy Commission.', [18]),
+                u'104\u2014170' : PublicLaw(u'104\u2014170', 'Food Quality Protection Act of 1996', 'August 3, 1996', 'To amend the Federal Insecticide, Fungicide, and Rodenticide Act and the Federal Food, Drug, and Cosmetic Act, and for other purposes.', [42937]),
+                u'104\u2014172' : PublicLaw(u'104\u2014172', 'Iran and Libya Sanctions Act of 1996', 'August 5, 1996', "To impose sanctions on persons making certain investments directly and significantly contributing to the enhancement of the ability of Iran or Libya to develop its petroleum resources, and on persons exporting certain items that enhance Libya's weapons or aviation capabilities or enhance Libya's ability to develop its petroleum resources, and for other purposes.", [50]),
+                u'104\u2014188' : PublicLaw(u'104\u2014188', 'Small Business Job Protection Act of 1996', 'August 20, 1996', 'To provide tax relief for small businesses, to protect jobs, to create opportunities, to increase the take home pay of workers, to amend the Portal-to-Portal Act of 1947 relating to the payment of wages to employees who use employer owned vehicles, and to amend the Fair Labor Standards Act of 1938 to increase the minimum wage rate and to prevent job loss by providing flexibility to employers in complying with minimum wage and overtime requirements under that Act.', [19, 26, 29, 42]),
+                u'104\u2014191' : PublicLaw(u'104\u2014191', 'Health Insurance Portability and Accountability Act of 1996', 'August 21, 1996', 'To amend the Internal Revenue Code of 1986 to improve portability and continuity of health insurance coverage in the group and individual markets, to combat waste, fraud, and abuse in health insurance and health care delivery, to promote the use of medical savings accounts, to improve access to long-term care services and coverage, to simplify the administration of health insurance, and for other purposes.', [26, 29, 42]),
+                u'104\u2014192' : PublicLaw(u'104\u2014192', 'War Crimes Act of 1996', 'August 21, 1996', 'To amend title 18, United States Code, to carry out the international obligations of the United States under the Geneva Conventions to provide criminal penalties for certain war crimes.', [18]),
+                u'104\u2014193' : PublicLaw(u'104\u2014193', 'Personal Responsibility and Work Opportunity Reconciliation Act of 1996', 'August 22, 1996', 'To provide for reconciliation pursuant to section 201(a)(1) of the concurrent resolution on the budget for fiscal year 1997.', [2, 7, 8, 10, 11, 13, 21, 26, 29, 42, 44]),
+                u'104\u2014199' : PublicLaw(u'104\u2014199', 'Defense of Marriage Act', 'September 21, 1996', 'To define and protect the institution of marriage.', [1]),
+                u'104\u2014208' : PublicLaw(u'104\u2014208', 'Omnibus Consolidated Appropriations Act, 1997; Domestic Violence Offender Gun Ban; Child Pornography Prevention Act of 1996; Clinger-Cohen Act of 1996', 'September 30, 1996', 'Making omnibus consolidated appropriations for the fiscal year ending September 30, 1997, and for other purposes.', [2, 3, 5, 8, 10, 12, 13, 15, 16, 18, 20, 22, 25, 26, 28, 29, 30, 31, 33, 39, 40, 41, 42, 43, 46, 47, 48, 50]),
+                u'104\u2014237' : PublicLaw(u'104\u2014237', 'Comprehensive Methamphetamine Control Act of 1996', 'October 3, 1996', 'To prevent the illegal manufacturing and use of methamphetamine.', [21, 28, 42]),
+                u'104\u2014264' : PublicLaw(u'104\u2014264', 'Federal Aviation Reauthorization Act of 1996', 'October 9, 1996', 'To amend title 49, United States Code, to reauthorize programs of the Federal Aviation Administration, and for other purposes.', [26, 49]),
+                u'104\u2014290' : PublicLaw(u'104\u2014290', 'National Securities Markets Improvement Act of 1996', 'October 11, 1996', 'To amend the Federal securities laws in order to promote efficiency and capital formation in the financial markets, and to amend the Investment Company Act of 1940 to promote more efficient management of mutual funds, protect investors, and provide more effective and less burdensome regulation.', [15, 29]),
+                u'104\u2014294' : PublicLaw(u'104\u2014294', 'Economic Espionage Act of 1996', 'October 11, 1996', 'To amend title 18, United States Code, to protect proprietary economic information, and for other purposes.', [18, 28, 42]),
+                u'104\u2014303' : PublicLaw(u'104\u2014303', 'Water Resources Development Act of 1996', 'October 12, 1996', 'To provide for the conservation and development of water and related resources, to authorize the Secretary of the Army to construct various projects for improvements to rivers and harbors of the United States, and for other purposes.', [16, 22, 26, 33, 42]),
+                u'104\u2014329' : PublicLaw(u'104\u2014329', 'United States Commemorative Coin Act of 1996', 'October 20, 1996', 'To establish United States commemorative coin programs, and for other purposes.', [16, 31]),
+                u'104\u2014330' : PublicLaw(u'104\u2014330', 'Native American Housing Assistance and Self-Determination Act of 1996', 'October 26, 1996', 'To provide Federal assistance for Indian tribes in a manner that recognizes the right of tribal self-governance, and for other purposes.', [15700]),
+                u'104\u2014332' : PublicLaw(u'104\u2014332', 'National Invasive Species Act of 1996', 'October 26, 1996', 'To provide for ballast water management to prevent the introduction and spread of nonindigenous species into the waters of the United States, and for other purposes.', [16, 33])
+        }
+        
+}
+
+
 YEARS = {
         1994 : {
                 "president" : 42,
                 "congress" : 103,
                 "numTitles" : 50,
+                "numPublicLaws" : 255,
                 "revisions" : {}
         },
         1995 : {
                 "president" : 42,
                 "congress" : 104,
                 "numTitles" : 50,
+                "numPublicLaws": 88,
                 "revisions" : {}
         },
         1996 : {
                 "president" : 42,
                 "congress" : 104,
                 "numTitles" : 50,
+                "numPublicLaws" : 245,
                 "revisions" : {
                                 "total": {'del': 53724, 'ins': 112469},
                                 1: {'del': 0, 'ins': 5},
@@ -139,6 +184,7 @@ YEARS = {
                 "president" : 42,
                 "congress" : 105,
                 "numTitles" : 50,
+                "numPublicLaws" : 153,
                 "revisions" : {
                                 "total": {'del': 26161, 'ins': 53671},
                                 1: {'del': 8, 'ins': 8},
@@ -197,6 +243,7 @@ YEARS = {
                 "president" : 42,
                 "congress" : 105,
                 "numTitles" : 50,
+                "numPublicLaws" : 241,
                 "revisions" : {
                                 "total": {'del': 88064, 'ins': 110219},
                                 1: {'del': 0, 'ins': 0},
@@ -255,6 +302,7 @@ YEARS = {
                 "president" : 42,
                 "congress" : 106,
                 "numTitles" : 50,
+                "numPublicLaws" : 170,
                 "revisions" : {
                                 "total": {'del': 18396, 'ins': 33052},
                                 1: {'del': 0, 'ins': 0},
@@ -313,6 +361,7 @@ YEARS = {
                 "president" : 42,
                 "congress" : 106,
                 "numTitles" : 50,
+                "numPublicLaws" : 410,
                 "revisions" : {
                                 "total": {'del': 101389, 'ins': 84246},
                                 1: {'del': 0, 'ins': 0},
@@ -371,6 +420,7 @@ YEARS = {
                 "president" : 43,
                 "congress" : 107,
                 "numTitles" : 50,
+                "numPublicLaws" : 108,
                 "revisions" : {
                                 "total": {'del': 31055, 'ins': 116887},
                                 1: {'del': 0, 'ins': 0},
@@ -429,6 +479,7 @@ YEARS = {
                 "president" : 43,
                 "congress" : 107,
                 "numTitles" : 50,
+                "numPublicLaws" : 269,
                 "revisions" : {
                                 "total": {'del': 77974, 'ins': 32972},
                                 1: {'del': 0, 'ins': 9},
@@ -487,6 +538,7 @@ YEARS = {
                 "president" : 43,
                 "congress" : 108,
                 "numTitles" : 50,
+                "numPublicLaws" : 198,
                 "revisions" : {
                                 "total": {'del': 14382, 'ins': 46299},
                                 1: {'del': 0, 'ins': 1},
@@ -545,6 +597,7 @@ YEARS = {
                 "president" : 43,
                 "congress" : 108,
                 "numTitles" : 50,
+                "numPublicLaws" : 300,
                 "revisions" : {
                                 "total": {'del': 24009, 'ins': 53318},
                                 1: {'del': 5, 'ins': 20},
@@ -603,6 +656,7 @@ YEARS = {
                 "president" : 43,
                 "congress" : 109,
                 "numTitles" : 50,
+                "numPublicLaws" : 161,
                 "revisions" : {
                                 "total": {'del': 107541, 'ins': 60527},
                                 1: {'del': 0, 'ins': 0},
@@ -661,6 +715,7 @@ YEARS = {
                 "president" : 43,
                 "congress" : 109,
                 "numTitles" : 50,
+                "numPublicLaws" : 309,
                 "revisions" : {
                                 "total": {'del': 135262, 'ins': 155808},
                                 1: {'del': 0, 'ins': 0},
@@ -719,6 +774,7 @@ YEARS = {
                 "president" : 43,
                 "congress" : 110,
                 "numTitles" : 50,
+                "numPublicLaws" : 187,
                 "revisions" : {
                                 "total": {'del': 144256, 'ins': 27169},
                                 1: {'del': 0, 'ins': 0},
@@ -777,6 +833,7 @@ YEARS = {
                 "president" : 43,
                 "congress" : 110,
                 "numTitles" : 50,
+                "numPublicLaws" : 285,
                 "revisions" : {
                                 "total": {'del': 109355, 'ins': 31641},
                                 1: {'del': 0, 'ins': 0},
@@ -835,48 +892,56 @@ YEARS = {
                 "president" : 44,
                 "congress" : 111,
                 "numTitles" : 50,
+                "numPublicLaws" : 125,
                 "revisions" : {}
         },
         2010 : {
                 "president" : 44,
                 "congress" : 111,
                 "numTitles" : 50,
+                "numPublicLaws" : 221,
                 "revisions" : {}
         },
         2011 : {
                 "president" : 44,
                 "congress" : 112,
                 "numTitles" : 51,
+                "numPublicLaws" : 118,
                 "revisions" : {}
         },
         2012 : {
                 "president" : 44,
                 "congress" : 112,
                 "numTitles" : 51,
+                "numPublicLaws" : 157,
                 "revisions" : {}
         },
         2013 : {
                 "president" : 44,
                 "congress" : 113,
                 "numTitles" : 51,
+                "numPublicLaws" : 117,
                 "revisions" : {}
         },
         2014 : {
                 "president" : 44,
                 "congress" : 113,
                 "numTitles" : 54,
+                "numPublicLaws" : 224,
                 "revisions" : {}
         },
         2015 : {
                 "president" : 44,
                 "congress" : 114,
                 "numTitles" : 54,
+                "numPublicLaws" : 115,
                 "revisions" : {}
         },
         2016 : {
                 "president" : 44,
                 "congress" : 114,
                 "numTitles" : 54,
+                "numPublicLaws" : 213,
                 "revisions" : {}
         }
 }
