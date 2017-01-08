@@ -23,14 +23,3 @@ function updateTitle() {
 
 	return false;
 }
-
-function injectDiffCounts() {
-	var numInsertions = document.getElementsByTagName("ins").length;
-	var numDeletions = document.getElementsByTagName("del").length;
-
-	insertionSpan = document.getElementById("num-insertions");
-	deletionSpan = document.getElementById("num-deletions");
-
-	insertionSpan.textContent = numInsertions;
-	deletionSpan.textContent = numDeletions;
-}
