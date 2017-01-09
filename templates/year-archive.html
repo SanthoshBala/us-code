@@ -5,6 +5,9 @@
 		<script src="../../../static/js/year-archive.js"></script>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>The Code We Live By</title>
+
+		{# Jinja Macros #}
+		{% import 'macros.html' as macros %}
 	</head>
 	<body>
 		<div id="site-header">
@@ -29,119 +32,140 @@
 
 		<div id="title-year-overview">
 
-			<p>
-				{% if congressionalData.keys()|length == 1 %}
-					In {{year}}, the {{congressionalData.keys()[0]}}th Congress enacted {{annualData["numPublicLaws"]}} public laws, yielding
-					a total of {{annualData["revisions"]["total"]["ins"]}} additions and {{annualData["revisions"]["total"]["del"]}} deletions to the United States Code, with the most extensive changes focused on Titles <a href="/archive/annual/{{year}}/{{annualData['mostEdited'][0]}}">{{annualData["mostEdited"][0]}}</a>, <a href="/archive/annual/{{year}}/{{annualData['mostEdited'][1]}}">{{annualData['mostEdited'][1]}}</a>, and <a href="/archive/annual/{{year}}/{{annualData['mostEdited'][2]}}">{{annualData['mostEdited'][2]}}</a>.
-				{% else %}
-					blah
+			<p>	
+				In {{year}}, the 
+				
+				{# Add extra context of extent of revisions only if we have the data. #}
+				{%- if congressionalData.keys()|length == 1 -%}
+					{% set congress = congressionalData.keys()[0] %}
+					{{ macros.ordinal_congress(congress) }}
+				{%- else -%}
+					{% set congresses = congressionalData.keys()|sort %}
+					{{ macros.ordinal_number(congresses[0]) }}
+					and 
+					{{ macros.ordinal_number(congresses[1]) }}
+					Congresses
 				{% endif %}
+
+				enacted {{annualData["numPublicLaws"]}} public laws
+
+				{#- Add extra context of extent of revisions only if we have the data. -#}
+				{%- if annualData["revisions"].get("total") -%}
+					, yielding
+					a total of {{annualData["revisions"]["total"]["ins"]}} additions and {{annualData["revisions"]["total"]["del"]}} deletions to the United States Code, with the most extensive changes focused on Titles <a href="/archive/annual/{{year}}/{{annualData['mostEdited'][0]}}">{{annualData["mostEdited"][0]}}</a>, <a href="/archive/annual/{{year}}/{{annualData['mostEdited'][1]}}">{{annualData['mostEdited'][1]}}</a>, and <a href="/archive/annual/{{year}}/{{annualData['mostEdited'][2]}}">{{annualData['mostEdited'][2]}}</a>
+				{%- endif -%}.
 			</p>
 
+			<!-- Don't try to render revisions if we don't have the data. -->
+			{% if annualData["revisions"].get("total") %}
+				<div id="revisions-per-title-visualization">
+					<table id="revisions-per-title-visualization" align="center">
+						{% set revisions = annualData["revisions"] %}
+						<tr valign="baseline">
+							<th align="right">
+								Deletions
+							</th>
+							<th align="center">
+								Title
+							</th>
+							<th align="left">
+								Additions
+							</th>
+						</th>
+						{% for title, value in revisions.iteritems() %}
+							{% if title != "total" %}
+								<tr style="white-space:nowrap;">
+									<td align="right">
+										<a href="/archive/annual/{{year}}/{{title}}">
+											<div style="color:red; display:inline-block; line-height:32px; vertical-align:bottom; white-space:nowrap;">
+												+{{value["del"]}}
+											</div>
+											<div style="background-color:red; width:{{value['ins'] / 150}}; height:32px; display:inline-block; vertical-align:bottom; white-space:nowrap;">
+												&nbsp;
+											</div>
+										</a>
+									</td>
+									<td align="center">
+										<a href="/archive/annual/{{year}}/{{title}}">
+										<div style="color: white; background-color:gray; width:32px; height:32px; display:inline-block; vertical-align:bottom; line-height:32px;">
+												{{title}}
+										</div>
+										</a>
+									</td>
+									<td align="left">
+										<a href="/archive/annual/{{year}}/{{title}}">
+											<div style="background-color:green; width:{{value['ins'] / 150}}; height:32px; display:inline-block; vertical-align:bottom; white-space:nowrap;">
+												&nbsp;
+											</div>
+											<div style="color:green; display:inline-block; line-height:32px; vertical-align:bottom; white-space:nowrap;">
+												+{{value["ins"]}}
+											</div>
+										</a>
+									</td>
+								</tr>
+							{% endif %}
+						{% endfor %}
+					</table>
+				</div>
 
-			<div id="revisions-per-title-visualization">
-				<table id="revisions-per-title-visualization" align="center">
-					{% set revisions = annualData["revisions"] %}
-					<tr valign="baseline">
-						<th align="right">
-							Deletions
-						</th>
-						<th align="center">
-							Title
-						</th>
-						<th align="left">
-							Additions
-						</th>
-					</th>
-					{% for title, value in revisions.iteritems() %}
-						{% if title != "total" %}
-							<tr style="white-space:nowrap;">
-								<td align="right">
-									<a href="/archive/annual/{{year}}/{{title}}">
-										<div style="color:red; display:inline-block; line-height:32px; vertical-align:bottom; white-space:nowrap;">
-											+{{value["del"]}}
-										</div>
-										<div style="background-color:red; width:{{value['ins'] / 100}}; height:32px; display:inline-block; vertical-align:bottom; white-space:nowrap;">
-											&nbsp;
-										</div>
-									</a>
-								</td>
-								<td align="center">
-									<a href="/archive/annual/{{year}}/{{title}}">
-									<div style="color: white; background-color:gray; width:32px; height:32px; display:inline-block; vertical-align:bottom; line-height:32px;">
-											{{title}}
-									</div>
-									</a>
-								</td>
-								<td align="left">
-									<a href="/archive/annual/{{year}}/{{title}}">
-										<div style="background-color:green; width:{{value['ins'] / 100}}; height:32px; display:inline-block; vertical-align:bottom; white-space:nowrap;">
-											&nbsp;
-										</div>
-										<div style="color:green; display:inline-block; line-height:32px; vertical-align:bottom; white-space:nowrap;">
+
+				<div id="revisions-per-title-visualization">
+					<table id="revisions-per-title-visualization" align="center">
+						{% set revisions = annualData["revisions"] %}
+						<tr>
+							{% for title, value in revisions.iteritems() %}
+								{% if title != "total" %}
+									<td valign="bottom" align="center">
+										<div style="color:green;">
 											+{{value["ins"]}}
 										</div>
-									</a>
-								</td>
-							</tr>
-						{% endif %}
-					{% endfor %}
-				</table>
-			</div>
-
-
-			<div id="revisions-per-title-visualization">
-				<table id="revisions-per-title-visualization" align="center">
-					{% set revisions = annualData["revisions"] %}
-					<tr>
-						{% for title, value in revisions.iteritems() %}
-							{% if title != "total" %}
-								<td valign="bottom" align="center">
-									<div style="color:green;">
-										+{{value["ins"]}}
-									</div>
-									<div style="background-color:green; height:{{value['ins'] / 100}}; width:60px;">
-									</div>
-								</td>
-							{% endif %}
-						{% endfor %}
-					</tr>
-					<tr>
-						{% for title, value in revisions.iteritems() %}
-							{% if title != "total" %}
-								<td align="center">
-									<div style="background-color:gray; color:white;">
-										{{title}}
-									</div>
-								</td>
-							{% endif %}
-						{% endfor %}
-					</tr>
-					<tr>
-						{% for title, value in revisions.iteritems() %}
-							{% if title != "total" %}
-								<td valign="top" align="center">
-									<div style="background-color:red; height:{{value['del'] / 100}};">
-									</div>
-									<div style="color:red;">
-										–{{value["del"]}}
-									</div>
-								</td>
-							{% endif %}
-						{% endfor %}
-					</tr>
-				</table>
-			</div>
-
+										<div style="background-color:green; height:{{value['ins'] / 100}}; width:60px;">
+										</div>
+									</td>
+								{% endif %}
+							{% endfor %}
+						</tr>
+						<tr>
+							{% for title, value in revisions.iteritems() %}
+								{% if title != "total" %}
+									<td align="center">
+										<div style="background-color:gray; color:white;">
+											{{title}}
+										</div>
+									</td>
+								{% endif %}
+							{% endfor %}
+						</tr>
+						<tr>
+							{% for title, value in revisions.iteritems() %}
+								{% if title != "total" %}
+									<td valign="top" align="center">
+										<div style="background-color:red; height:{{value['del'] / 100}};">
+										</div>
+										<div style="color:red;">
+											–{{value["del"]}}
+										</div>
+									</td>
+								{% endif %}
+							{% endfor %}
+						</tr>
+					</table>
+				</div>
+			{% endif %}
 
 		</div>
 
-		{% for congress, overview in congressionalData.iteritems() %}
+		{% for congress in congressionalData.keys()|sort %}
+			
+			{% set overview = congressionalData[congress] %}
+
 			<hr>
 
 			<div id="congress-overview">
 				<div id="section-title">
-					<h1 id="section-title-text"> {{congress}}th Congress </h1>
+					<h1 id="section-title-text"> 
+						{{ macros.ordinal_congress(congress) }}
+					</h1>
 				</div>
 
 				<div id="leadership-summary">
@@ -373,52 +397,69 @@
 				<div id="legislative-summary">
 					{% set publicLaws = overview["publicLaws"] %}
 
-					<table id="legislative-summary" align="center">
-						<tr>
-							<th class="public-law-number" align="left" valign="baseline">
-								Law Number
-							</th>
-							<th align="left" valign="baseline">
-								Title
-							</th>
-							<th align="left" valign="baseline">
-								Description
-							</th>
-							<th align="left" valign="baseline">
-								Amended Titles
-							</th>
-							<th class="public-law-date" align="left" valign="baseline">
-								Date Enacted
-							</th>
-						</tr>
-						{% for publicLaw in publicLaws %}
-							<tr>
-								<td class="public-law-number" valign="top">
-									<a href="http://legislink.org/us/pl-{{publicLaw.law_id}}">PL {{publicLaw.law_id}}</a>
-								</td>
-								<td class="public-law-title" valign="top">
-									{{publicLaw.title}}
-								</td>
-								<td class="public-law-description" valign="top">
-									{{publicLaw.description}}
-								</td>
-								<td class="public-law-amended-titles" valign="top">
-									{% set numCommas = 1 %}
-									{% for amended_title in publicLaw.amended_titles %}
-										{% if numCommas < publicLaw.amended_titles|length %}
-											<a href="/archive/annual/{{year}}/{{amended_title}}">{{amended_title}}</a>,
-										{% else %}
-											<a href="/archive/annual/{{year}}/{{amended_title}}">{{amended_title}}</a>
-										{% endif %}
-										{% set numCommas = numCommas + 1 %}
-									{% endfor %}
-								</td>
-								<td class="public-law-date" valign="top">
-									{{publicLaw.date_enacted}}
-								</td>
-							</tr>
-						{% endfor %}
-					</table>
+					{# Only print publicLaws if we have the data. #}
+					{% if publicLaws|length > 0 %}
+
+						<div id="legislative-summary-intro">
+							Below are the most significant public laws passed by the
+							{{ macros.ordinal_congress(congress) }} in {{year}}.
+						</div>
+						
+						<div id="legislative-summary-content">
+							<table id="legislative-summary-table" align="center">
+								<tr>
+									<th align="left" valign="baseline">
+										Name
+									</th>
+									<th align="left" valign="baseline">
+										Amended Titles
+									</th>
+									<th align="left" valign="baseline">
+										Description
+									</th>
+									<th class="public-law-number" align="left" valign="baseline">
+										Number
+									</th>
+									<th class="public-law-date" align="left" valign="baseline">
+										Date Enacted
+									</th>
+								</tr>
+								{% for publicLaw in publicLaws %}
+									<tr>
+
+										<td class="public-law-title" valign="top">
+											{{publicLaw.title}}
+										</td>
+										<td class="public-law-amended-titles" valign="top">
+											{% set numCommas = 1 %}
+											{% for amended_title in publicLaw.amended_titles %}
+												{% if numCommas < publicLaw.amended_titles|length %}
+													<a href="/archive/annual/{{year}}/{{amended_title}}">{{amended_title}}</a>,
+												{% else %}
+													<a href="/archive/annual/{{year}}/{{amended_title}}">{{amended_title}}</a>
+												{% endif %}
+												{% set numCommas = numCommas + 1 %}
+											{% endfor %}
+										</td>
+										<td class="public-law-description" valign="top">
+											{{publicLaw.description}}
+										</td>
+										<td class="public-law-number" valign="top">
+											<a href="http://legislink.org/us/pl-{{publicLaw.law_id}}">PL {{publicLaw.law_id}}</a>
+										</td>
+										<td class="public-law-date" valign="top">
+											{{publicLaw.date_enacted}}
+										</td>
+									</tr>
+								{% endfor %}
+							</table>
+						</div>
+					{% else %}
+						<div id="legislative-summary-intro">
+							Though the {{ macros.ordinal_congress(congress) }} was technically in office for the first few weeks of January {{year}},
+							it did not pass any significant legislation during that time.
+						</div>
+					{% endif %}
 				</div>
 
 			</div>

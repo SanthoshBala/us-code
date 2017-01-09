@@ -1,0 +1,17 @@
+{% macro ordinal_number(number) %}
+	{# Set the appropriate ordinal indicator. #}
+	{% if number % 10 == 1 %}
+		{{number}}st
+	{% elif number % 10 == 2 %}
+		{{number}}nd
+	{% elif number % 10 == 3 %}
+		{{number}}rd
+	{% else %}
+		{{number}}th
+	{% endif %}
+{% endmacro %}
+
+{% macro ordinal_congress(congress) %}
+	{{ ordinal_number(congress) }}
+	Congress
+{% endmacro %}
