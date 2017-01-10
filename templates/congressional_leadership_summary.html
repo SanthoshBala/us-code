@@ -1,0 +1,286 @@
+<div id="congressional-leadership-summary">
+
+	{% set portraitHeight = "120px" %}
+
+	{# DESKTOP #}
+
+	<table id="leadership-table" align="center">
+		<tr>
+			<td align="center" colspan=2 class="branch-title">
+				Executive
+			</td>
+		</tr>
+		<tr>
+			<td align="center" colspan=2 class="branch-title">
+				<img src="/static/images/portraits/{{president.last_name.lower()}}.jpg" alt="{{president.last_name}}" height={{portraitHeight}}>
+				</td>
+			</tr>
+			<tr>
+				<td align="center" colspan=2 class="leader-name">
+					{{ macros.president_name(president) }}
+				</td>
+			</tr>
+			<tr>
+				<td align="center" colspan=2 class="position-title">
+					POTUS
+				</td>
+			</tr>
+			<tr>
+				<td align="center" colspan=1 class="branch-title">
+					House
+				</td>
+				<td align="center" colspan=1 class="branch-title">
+					Senate
+				</td>
+			</tr>
+			<tr>
+				<td class="house-party-division" align="center" colspan=1>
+					<span class="democrat-d">
+						{{house.democrats}} D</span> 
+					• 
+					{% if house.others > 0%}
+					<span class="independent-i">
+						{{house.others}} I</span> 
+					•
+					{% endif %}
+					<span class="republican-r">
+						{{house.republicans}} R</span>
+				</td>
+				<td class="senate-party-division" align="center" colspan=1>
+					<span class="democrat-d">
+						{{senate.democrats}} D</span> 
+					• 
+					{% if senate.others > 0%}
+					<span class="independent-i">
+						{{senate.others}} I</span> 
+					•
+					{% endif %}
+					<span class="republican-r">
+						{{senate.republicans}} R</span>
+				</td>
+			</tr>
+			<tr>
+				<td align="center">
+					{% if house.democrats >= house.republicans %}
+						<img src="/static/images/portraits/{{houseDemLeader.last_name.lower()}}.jpg" alt="{{houseDemLeader.last_name}}" height={{portraitHeight}}>
+					{% elif house.democrats < house.republicans %}
+						<img src="/static/images/portraits/{{houseRepLeader.last_name.lower()}}.jpg" alt="{{houseRepLeader.last_name}}" height={{portraitHeight}}>
+					{%endif%}
+				</td>
+				<td align="center">
+					{% if senate.democrats >= senate.republicans %}
+						<img src="/static/images/portraits/{{senateDemLeader.last_name.lower()}}.jpg" alt="{{senateDemLeader.last_name}}" height={{portraitHeight}}>
+					{% elif senate.democrats < senate.republicans %}
+						<img src="/static/images/portraits/{{senateRepLeader.last_name.lower()}}.jpg" alt="{{senateRepLeader.last_name}}" height={{portraitHeight}}>
+					{%endif%}
+				</td>
+			</tr>
+			<tr>
+				<td align="center" class="leader-name">
+					{% if house.democrats >= house.republicans %}
+						{{ macros.congressperson_name(houseDemLeader) }}
+					{% elif house.democrats < house.republicans %}
+						{{ macros.congressperson_name(houseRepLeader) }}
+					{%endif%}
+				</td>
+				<td align="center" class="leader-name">
+					{% if senate.democrats >= senate.republicans %}
+						{{ macros.congressperson_name(senateDemLeader) }}
+					{% elif senate.democrats < senate.republicans %}
+						{{ macros.congressperson_name(senateRepLeader) }}
+					{%endif%}
+				</td>
+			</tr>
+			<tr>
+				<td align="center" class="position-title">
+					{% if house.democrats == house.republicans %}
+						Democratic Leader
+					{% else %}
+						Speaker
+					{% endif %}
+				</td>
+				<td align="center" class="position-title">
+					{% if senate.democrats == senate.republicans %}
+						Democratic Leader
+					{% else %}
+						Majority Leader
+					{% endif %}
+				</td>
+			</tr>
+			<tr>
+				<td align="center">
+					{% if house.democrats >= house.republicans %}
+						<img src="/static/images/portraits/{{houseRepLeader.last_name.lower()}}.jpg" alt="{{houseRepLeader.last_name}}" height={{portraitHeight}}>
+					{% elif house.democrats < house.republicans %}
+						<img src="/static/images/portraits/{{houseDemLeader.last_name.lower()}}.jpg" alt="{{houseDemLeader.last_name}}" height={{portraitHeight}}>
+					{%endif%}
+				</td>
+				<td align="center">
+					{% if senate.democrats >= senate.republicans %}
+						<img src="/static/images/portraits/{{senateRepLeader.last_name.lower()}}.jpg" alt="{{senateRepLeader.last_name}}" height={{portraitHeight}}>
+					{% elif senate.democrats < senate.republicans %}
+						<img src="/static/images/portraits/{{senateDemLeader.last_name.lower()}}.jpg" alt="{{senateDemLeader.last_name}}" height={{portraitHeight}}>
+					{%endif%}
+				</td>
+			</tr>
+			<tr>
+				<td align="center" class="leader-name">
+					{% if house.democrats >= house.republicans %}
+						{{ macros.congressperson_name(houseRepLeader) }}
+					{% elif house.democrats < house.republicans %}
+						{{ macros.congressperson_name(houseDemLeader) }}
+					{%endif%}
+				</td>
+				<td align="center" class="leader-name">
+					{% if senate.democrats >= senate.republicans %}
+						{{ macros.congressperson_name(senateRepLeader) }}
+					{% elif senate.democrats < senate.republicans %}
+						{{ macros.congressperson_name(senateDemLeader) }}
+					{%endif%}
+				</td>
+			</tr>
+			<tr>
+				<td align="center" class="position-title">
+					{% if house.democrats == house.republicans %}
+						Republican Leader
+					{% else %}
+						Minority Leader
+					{% endif %}
+				</td>
+				<td align="center" class="position-title">
+					{% if senate.democrats == senate.republicans %}
+						Republican Leader
+					{% else %}
+						Minority Leader
+					{% endif %}
+				</td>
+			</tr>
+	</table>
+
+	{# DESKTOP #}
+
+	<table id="desktop-leadership-table" align="center">
+		<tr>
+			<td align="center" colspan=4 class="branch-title">
+				Executive
+			</td>
+		</tr>
+		<tr>
+			<td align="center" colspan=4 class="branch-title">
+				<img src="/static/images/portraits/{{president.last_name.lower()}}.jpg" alt="{{president.last_name}}" height={{portraitHeight}}>
+				</td>
+			</tr>
+			<tr>
+				<td align="center" colspan=4 class="leader-name">
+					{{ macros.president_name(president) }}
+				</td>
+			</tr>
+			<tr>
+				<td align="center" colspan=4 class="position-title">
+					POTUS
+				</td>
+			</tr>
+			<tr>
+				<td align="center" colspan=2 class="branch-title">
+					House
+				</td>
+				<td align="center" colspan=2 class="branch-title">
+					Senate
+				</td>
+			</tr>
+			<tr>
+				<td class="house-party-division" align="center" colspan=2>
+					<span class="democrat-d">
+						{{house.democrats}} D</span> 
+					• 
+					{% if house.others > 0%}
+					<span class="independent-i">
+						{{house.others}} I</span> 
+					•
+					{% endif %}
+					<span class="republican-r">
+						{{house.republicans}} R</span>
+				</td>
+				<td class="senate-party-division" align="center" colspan=2>
+					<span class="democrat-d">
+						{{senate.democrats}} D</span> 
+					• 
+					{% if senate.others > 0%}
+					<span class="independent-i">
+						{{senate.others}} I</span> 
+					•
+					{% endif %}
+					<span class="republican-r">
+						{{senate.republicans}} R</span>
+				</td>
+			</tr>
+
+
+			<tr>
+				<td align="center">
+					<img src="/static/images/portraits/{{houseDemLeader.last_name.lower()}}.jpg" alt="{{houseDemLeader.last_name}}" height={{portraitHeight}}>
+				</td>
+				<td align="center">
+					<img src="/static/images/portraits/{{houseRepLeader.last_name.lower()}}.jpg" alt="{{houseRepLeader.last_name}}" height={{portraitHeight}}>
+				</td>
+				<td align="center">
+					<img src="/static/images/portraits/{{senateDemLeader.last_name.lower()}}.jpg" alt="{{senateDemLeader.last_name}}" height={{portraitHeight}}>
+				</td>
+				<td align="center">
+					<img src="/static/images/portraits/{{senateRepLeader.last_name.lower()}}.jpg" alt="{{senateRepLeader.last_name}}" height={{portraitHeight}}>
+				</td>
+			</tr>
+			<tr>
+				<td align="center" class="leader-name">
+					{{ macros.congressperson_name(houseDemLeader) }}
+				</td>
+				<td align="center" class="leader-name">
+					{{ macros.congressperson_name(houseRepLeader) }}
+				</td>
+				<td align="center" class="leader-name">
+					{{ macros.congressperson_name(senateDemLeader) }}
+				</td>
+				<td align="center" class="leader-name">
+					{{ macros.congressperson_name(senateRepLeader) }}
+				</td>
+			</tr>
+			<tr>
+				<td align="center" class="position-title">
+					{% if house.democrats > house.republicans %}
+						Speaker
+					{% elif house.democrats == house.republicans %}
+						Democratic Leader
+					{% else %}
+						Minority Leader
+					{% endif %}
+				</td>
+				<td align="center" class="position-title">
+					{% if house.democrats > house.republicans %}
+						Minority Leader
+					{% elif house.democrats == house.republicans %}
+						Republican Leader
+					{% else %}
+						Speaker
+					{% endif %}
+				</td>
+				<td align="center" class="position-title">
+					{% if senate.democrats > senate.republicans %}
+						Majority Leader
+					{% elif senate.democrats == senate.republicans %}
+						Democratic Leader
+					{% else %}
+						Minority Leader
+					{% endif %}
+				</td>
+				<td align="center" class="position-title">
+					{% if senate.democrats > senate.republicans %}
+						Minority Leader
+					{% elif senate.democrats == senate.republicans %}
+						Republican Leader
+					{% else %}
+						Majority Leader
+					{% endif %}
+				</td>
+			</tr>
+	</table>
+</div>
