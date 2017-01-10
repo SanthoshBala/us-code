@@ -15,3 +15,77 @@
 	{{ ordinal_number(congress) }}
 	Congress
 {% endmacro %}
+
+{% macro person_first_last_name(person) %}
+	{% if person.nickname %}
+		{{ person.nickname }}
+	{% else %}
+		{{ person.first_name }}
+	{% endif %}
+	{{ person.last_name }}
+{% endmacro %}
+
+{% macro congressperson_name(person) %}
+	{{ person_first_last_name(person) }}
+	{% if person.party == "D" %}
+		(<span class="democrat-d">{{person.party}}</span>–{{person.state}})
+	{% elif person.party == "R" %}
+		(<span class="republican-r">{{person.party}}</span>–{{person.state}})
+	{% else %}
+		(<span class="independent-i">{{person.party}}</span>–{{person.state}})
+	{% endif %}						
+{% endmacro %}
+
+{% macro president_name(president) %}
+	{{ person_first_last_name(president) }}
+	{% if president.party == "D" %}
+		(<span class="democrat-d">{{president.party}}</span>)
+	{% elif president.party == "R" %}
+		(<span class="republican-r">{{president.party}}</span>)
+	{% else %}
+		(<span class="independent-i">{{person.party}}</span>–{{person.state}})
+	{% endif %}
+{% endmacro %}
+
+{% macro legislation_summary(publicLaws) %}
+	<div id="legislation-summary-content">
+		<table id="legislation-summary-table" align="center">
+			<tr>
+				<th align="left" valign="baseline">Name</th>
+				<th align="left" valign="baseline">Amended Titles</th>
+				<th align="left" valign="baseline">Description</th>
+				<th class="public-law-number" align="left" 
+					valign="baseline">Number</th>
+				<th class="public-law-date" align="left" 
+					valign="baseline">Date Enacted</th>
+			</tr>
+			{% for publicLaw in publicLaws %}
+				<tr>
+					<td class="public-law-title" valign="top">
+						{{publicLaw.title}}
+					</td>
+					<td class="public-law-amended-titles" valign="top">
+						{% set numCommas = 1 %}
+						{% for amended_title in publicLaw.amended_titles %}
+							{% if numCommas < publicLaw.amended_titles|length %}
+								<a href="/archive/annual/{{year}}/{{amended_title}}">{{amended_title}}</a>,
+							{% else %}
+								<a href="/archive/annual/{{year}}/{{amended_title}}">{{amended_title}}</a>
+							{% endif %}
+							{% set numCommas = numCommas + 1 %}
+						{% endfor %}
+					</td>
+					<td class="public-law-description" valign="top">
+						{{publicLaw.description}}
+					</td>
+					<td class="public-law-number" valign="top">
+						<a href="http://legislink.org/us/pl-{{publicLaw.law_id}}">PL {{publicLaw.law_id}}</a>
+					</td>
+					<td class="public-law-date" valign="top">
+						{{publicLaw.date_enacted}}
+					</td>
+				</tr>
+			{% endfor %}
+		</table>
+	</div>
+{% endmacro %}
