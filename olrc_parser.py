@@ -309,13 +309,17 @@ class OlrcParser:
 	def _deleteEditorialNotes(self, xmlSoup):
 		# To get rid of all notes, need to delete <table>, <div>, <p>, <h4>, and <!--> tags.
 		tableClasses = set(["uscdispo3col", "uscdispo2col", "uschistrev"])
+		h2Classes = set(["big-analysis-head"])
 		h3Classes = set([]) # "analysis-subhead"
 		h4Classes = set(["note-head", "note-sub-head", "source-credit", "analysis-subhead", "futureamend-note-head"])
 		pClasses = set(["note-head", "note-body", "note-body-1em", "footnote", "presidential-signature",
 					"note-body-flush0_hang1", "note-body-block", "note-body-2em", "note-body-flush2_hang3",
 					"futureamend-note-body", "note-body-flush3_hang4", "note-body-flush0_hang4",
-					"note-body-3em"])
-		divClasses = set(["analysis", "two-column-analysis-style-content-right"])
+					"note-body-3em", "5800I50", "5800I45", "centered-flushandhang"])
+		divClasses = set(["analysis", "two-column-analysis-style-content-right",
+							"two-column-analysis-style-content-left", "two-column-analysis-style-content-center",
+							"three-column-analysis-style-content-right", "three-column-analysis-style-content-left",
+							"three-column-analysis-style-content-center"])
 		divIds = set(["footer", "resizeWindow", "menu", "menu_homeLink", "header"])
 		spanIds = set(["resizeWindow"])
 		deletableTags = set(["br", "meta", "script", "noscript", "link", "sup"])
@@ -351,6 +355,9 @@ class OlrcParser:
 				if tagName == "table":
 				 	if child.attrib.get('class') in tableClasses:
 				 		removableNodes.add(child)
+				elif tagName == "h2":
+				 	if child.attrib.get('class') in h2Classes:
+				 		removableNodes.add(child)
 				elif tagName == "h3":
 				 	if child.attrib.get('class') in h3Classes:
 				 		removableNodes.add(child)
@@ -360,6 +367,10 @@ class OlrcParser:
 				elif tagName == "p":
 					if child.attrib.get('class') in pClasses:
 						removableNodes.add(child)
+					# Check if it is just filled with &nbsp;
+					if child.text is not None:
+						if child.text.isspace(): # or re.match("^[&nsbp;]+$", child.text)
+							removableNodes.add(child)	
 				elif tagName == "div":
 					if child.attrib.get('class') in divClasses:
 						removableNodes.add(child)

@@ -11,6 +11,7 @@ from olrc_differ import *
 import os
 import time
 
+
 def buildReadableArchiveHtmlFiles():
 	# Fetch XHTML Files
 	client = OlrcClient()
@@ -52,9 +53,9 @@ def buildAnnualDiffHtmlFiles():
 		preYearFileDir = "./archives/annual/%d/" % (preYear)
 		postYearFileDir = "./archives/annual/%d/" % (postYear)
 		if OlrcDiffer.DIFF_METHOD == OlrcDiffer.METHOD_HTML_DIFF:
-			annualDiffFileDir = "./archives/html_diff/%d/" % (postYear)
+			annualDiffFileDir = "./templates/code/diff/%d/" % (postYear)
 		elif OlrcDiffer.DIFF_METHOD == OlrcDiffer.METHOD_HTML_ANNOTATE:
-			annualDiffFileDir = "./archives/html_annotate/%d/" % (postYear)
+			annualDiffFileDir = "./templates/code/diff/%d/" % (postYear)
 
 		# If annualDiffFileDir does not exist, create it.
 		if not os.path.exists(annualDiffFileDir):
@@ -94,9 +95,9 @@ def injectAnnualDiffStyles():
 		preYearFileDir = "./archives/annual/%d/" % (preYear)
 		postYearFileDir = "./archives/annual/%d/" % (postYear)
 		if OlrcDiffer.DIFF_METHOD == OlrcDiffer.METHOD_HTML_DIFF:
-			annualDiffFileDir = "./archives/html_diff/%d/" % (postYear)
+			annualDiffFileDir = "./templates/code/diff/%d/" % (postYear)
 		elif OlrcDiffer.DIFF_METHOD == OlrcDiffer.METHOD_HTML_ANNOTATE:
-			annualDiffFileDir = "./archives/html_annotate/%d/" % (postYear)
+			annualDiffFileDir = "./templates/code/diff/%d/" % (postYear)
 
 		for title in range(1, numTitles + 1):
 			start = time.time()
@@ -120,5 +121,50 @@ def injectAnnualDiffStyles():
 											"type":"text/css",
 											"href":"../../../explorer/stylesheets/us-code-title-diff.css"})
 			print "\t\t%f" % (time.time() - start)
+
+	return
+
+def sumTitleByYearDiffs():
+	print "COMPUTING NUMBER OF REVISIONS"
+	revisionsPerYear = {}
+	for year, numTitles in OlrcClient.YEAR_TITLE_COUNT_MAP.items():
+		# For each year up to second to last...
+		if year < 1996 or year > 2008:
+			continue
+
+		postYear = year
+		preYear = year - 1
+		
+		print "%d -> %d" % (preYear, postYear)
+		revisionsPerYear.update({postYear: {}})
+		yearDict = revisionsPerYear[postYear]
+
+		preYearFileDir = "./archives/annual/%d/" % (preYear)
+		postYearFileDir = "./archives/annual/%d/" % (postYear)
+		if OlrcDiffer.DIFF_METHOD == OlrcDiffer.METHOD_HTML_DIFF:
+			annualDiffFileDir = "./templates/code/diff/%d/" % (postYear)
+		elif OlrcDiffer.DIFF_METHOD == OlrcDiffer.METHOD_HTML_ANNOTATE:
+			annualDiffFileDir = "./templates/code/diff/%d/" % (postYear)
+
+		for title in range(1, numTitles + 1):
+			start = time.time()
+			# Confirm that this title exists in the previous year.
+			if title > OlrcClient.YEAR_TITLE_COUNT_MAP[preYear]:
+				continue
+
+			print "\tTitle %d" % title
+			# Get filenames for each title.
+			titleDiffFileName = "usc-%d-%02d-diff.html" % (postYear, title)
+			lxmlParser = etree.HTMLParser(remove_blank_text=True, remove_comments=True)
+			lxmlTree = etree.parse(annualDiffFileDir + titleDiffFileName, lxmlParser)
+
+			insertions = len(lxmlTree.findall(".//ins"))
+			deletions = len(lxmlTree.findall(".//del"))
+
+			yearDict.update({title: {"ins" : insertions, "del" : deletions}})
+			print "\t\t%f" % (time.time() - start)
+
+	
+	print revisionsPerYear
 
 	return

@@ -19,7 +19,7 @@ class OlrcDiffer:
 	METHOD_DIFFER = "differ"
 	METHOD_HTML_DIFF = "html_diff"
 	METHOD_HTML_ANNOTATE = "html_annotate"
-	DIFF_METHOD = METHOD_HTML_ANNOTATE
+	DIFF_METHOD = METHOD_HTML_DIFF
 
 	def __init__(self, preFileName, postFileName, format=CODE_FORMAT_XHTML):
 		if self.DIFF_METHOD == self.METHOD_DIFFER:
