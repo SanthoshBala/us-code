@@ -1,0 +1,29 @@
+a {
+	text-decoration: none;
+}
+
+.democrat-d {
+	color: #00AEF3;
+}
+
+.independent-i {
+	color: #777777;
+}
+
+.republican-r {
+	color: #D8171E;
+}
+
+.bipartisan-p {
+	color: #6C6389;
+}
+
+
+@media screen and (min-device-width: 768px) {
+	.section-divider {
+		margin: 0 auto;
+		max-width: 508px;
+		margin-top: 32px;
+		margin-bottom: 32px;
+	}
+}

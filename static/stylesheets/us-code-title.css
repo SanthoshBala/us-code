@@ -10,20 +10,6 @@ body {
 	/*padding-top: 200px;*/
 }
 
-#site-header {
-	position: fixed;
-    background: white;
-    z-index: 999;
-    box-shadow: 0px 0px 4px 1px #8a8a8a;
-    height:48px;
-    width:100%;
-}
-
-#site-title {
-	line-height: 48px;
-	margin-left: 16px;
-}
-
 #archive-navigator {
 	/*position: fixed;*/
     background: white;
@@ -77,11 +63,6 @@ body {
     margin-right: 16px;
 }
 
-#congress-overview {
-	padding-top: 16px;
-	padding-bottom: 16px;
-}
-
 #section-title {
 	padding-bottom: 16px;
 }
@@ -105,18 +86,6 @@ hr {
 
 .branch-title {
 	font-weight: bold;
-}
-
-.democrat-d {
-	color: #00AEF3;
-}
-
-.independent-i {
-	color: #777777;
-}
-
-.republican-r {
-	color: #D8171E;
 }
 
 .page-content {
@@ -213,7 +182,7 @@ del {
 }
 
 table {
-	white-space: nowrap;
+	/*white-space: nowrap;*/
 	overflow-x: auto;
 }
 

@@ -1,0 +1,37 @@
+/* CONGRESS OVERVIEW */
+
+#congress-overview {
+	margin-left: 16px;
+	margin-right: 16px;
+}
+@media screen and (min-device-width: 768px) {
+	#congress-overview {
+		margin-left: 16px;
+		margin-right: 16px;
+	}
+}
+
+#leadership-table {
+
+}
+@media screen and (min-device-width: 768px) {
+	#leadership-table {
+		display: none;
+	}
+}
+#desktop-leadership-table {
+	display: none;
+}
+@media screen and (min-device-width: 768px) {
+	#desktop-leadership-table {
+		display: table;
+	}
+}
+
+.house-party-division {
+	padding-bottom: 8px;
+}
+
+.senate-party-division {
+	padding-bottom: 8px;
+}

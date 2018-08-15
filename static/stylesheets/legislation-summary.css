@@ -1,0 +1,59 @@
+/* LEGISLATIVE SUMMARY */
+
+#legislation-summary {
+	padding-top: 16px;
+}
+
+#legislation-summary-intro {
+}
+@media screen and (min-device-width: 768px) {
+	#legislation-summary-intro {
+		width: 540px;
+		margin: 0 auto;
+		padding-bottom: 16px;
+	}
+}
+
+#legislation-summary-content {
+	overflow-x: auto;
+	margin-left: -8px;
+}
+@media screen and (min-device-width: 768px) {
+	#legislation-summary-content {
+		overflow-x: auto;
+	}
+}
+
+#legislation-summary-table {
+	border-spacing: 8px;
+}
+@media screen and (min-device-width: 768px) {
+	#legislation-summary-table {
+		border-spacing: 8px;
+		margin-left: 60px;
+		margin-right: 60px;
+	}
+}
+
+.public-law-number {
+	/*width: 100px;	*/
+	white-space: nowrap;
+}
+
+.public-law-title {
+	min-width: 180px;
+}
+
+.public-law-description {
+	min-width: 340px;
+	max-width: 600px;
+}
+
+.public-law-amended-titles {
+	white-space: nowrap;
+}
+
+.public-law-date {
+	white-space: nowrap;
+	/*width: 100px;*/
+}

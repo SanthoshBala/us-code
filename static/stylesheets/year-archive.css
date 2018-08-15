@@ -1,28 +1,105 @@
 body {
 	margin: 0;
-	font-family: Helvetica, sans-serif;
+	font-family: Roboto, Helvetica, sans-serif;
 }
 
-/* PHONE */
-#content {
+/* TYPOGRAPHY */
+.title-deletion-count {
+	color: red;
+}
+
+.title-addition-count {
+	color: green;
+}
+
+/* PAGE TITLE */
+
+#page-title {
+	padding-top: 80px;
+	padding-bottom: 16px;
+}
+
+#page-title-text {
+	margin-top: 0px;
+	margin-bottom: 0px;
+	font-size: 22pt;
+	font-weight: normal;
+	text-align: center;
+}
+
+/* YEAR OVERVIEW */
+
+#year-overview {
 	margin-left: 16px;
-	margin-right: 16px;
-	/*padding-top: 200px;*/
+    margin-right: 16px;
+}
+@media screen and (min-device-width: 600px) and (max-device-width: 768px) {
+	#year-overview {
+		margin: 0 auto;
+		max-width: 540px;
+	}
+}
+@media screen and (min-device-width: 768px) {
+	#year-overview {
+		margin: 0 auto;
+		max-width: 540px;
+	}
 }
 
-#site-header {
-	position: fixed;
-    background: white;
-    z-index: 999;
-    box-shadow: 0px 0px 4px 1px #8a8a8a;
-    height:48px;
-    width:100%;
-}
-
-#site-title {
-	line-height: 48px;
+/* PORTRAIT REVISIONS VISUALIZATION */
+#portrait-revisions-viz {
+	overflow-x: auto;
 	margin-left: 16px;
+    margin-right: 16px;
+    padding-bottom: 16px;
 }
+@media screen and (min-device-width: 768px) {
+	#portrait-revisions-viz {
+		overflow-x: auto;
+		display: none;
+	}
+}
+
+#portrait-revisions-viz-intro {
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
+#portrait-revisions-viz-graphic {
+	padding-top: 8px;
+}
+
+.portrait-revisions-viz-graphic-header {
+	padding-top: 8px;
+	padding-bottom: 8px;
+}
+
+.portrait-revisions-viz-bar-label {
+	display:inline-block;
+	line-height:32px;
+	vertical-align:bottom;
+	white-space:nowrap;
+}
+
+/* LANDSCAPE REVISIONS VISUALIZATION */
+
+#landscape-revisions-viz {
+	overflow-x: auto;
+	display: none;
+}
+@media screen and (min-device-width: 768px) {
+	#landscape-revisions-viz {
+		overflow-x: auto;
+		display: block;
+	}
+}
+#landscape-revisions-viz-intro {
+	width: 540px;
+	margin: 0 auto;
+	padding-bottom: 16px;
+}
+
+/* MISCELLANEOUS */
 
 #archive-navigator {
 	/*position: fixed;*/
@@ -36,34 +113,8 @@ body {
 
 }
 
-#legislative-summary {
-	overflow-x: auto;
-	border-spacing: 8px;
-}
-
 th {
 	white-space: nowrap;
-}
-
-.public-law-number {
-	/*width: 100px;	*/
-}
-
-.public-law-title {
-	min-width: 160px;
-}
-
-.public-law-description {
-	min-width: 320px;
-}
-
-.public-law-titles-amended {
-	min-width: 80px;
-}
-
-.public-law-date {
-	white-space: nowrap;
-	/*width: 100px;*/
 }
 
 #year-selector {
@@ -86,37 +137,6 @@ th {
 	color: #6C6389;
 }
 
-#page-title {
-	padding-top: 64px;
-	/*padding-bottom: 16px;*/
-}
-
-#page-title-text {
-	margin-top: 0px;
-	margin-bottom: 0px;
-	font-size: 22pt;
-	font-weight: normal;
-	text-align: center;
-}
-
-#title-year-overview {
-	/*padding-top: 16px;*/
-	padding-bottom: 16px;
-	margin-left: 16px;
-    margin-right: 16px;
-}
-
-#revisions-per-title-visualization {
-	overflow-x: auto;
-}
-
-#congress-overview {
-	padding-top: 16px;
-	padding-bottom: 16px;
-	margin-left: 16px;
-	margin-right: 16px;
-}
-
 #section-title {
 	padding-bottom: 16px;
 }
@@ -129,17 +149,19 @@ th {
 	text-align: center;
 }
 
-a {
-	text-decoration: none;
-}
-
 hr {
 	margin-left: 32px;
 	margin-right: 32px;
 }
 
 .position-title {
-	font-style: italic;;
+	font-style: italic;
+	padding-bottom: 8px;
+}
+
+.leader-name {
+	padding-right: 8px;
+	padding-left: 8px;
 }
 
 .branch-title {
@@ -167,11 +189,9 @@ hr {
 	}*/
 }
 
-/* DESKTOP */
 @media screen and (min-device-width: 768px) {
 	#content {	
 		width: 540px;
 		margin: 0 auto;
 	}
-
 }

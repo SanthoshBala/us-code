@@ -1,0 +1,119 @@
+body {
+	margin: 0;
+	font-family: Roboto, Helvetica, sans-serif;
+}
+
+/* YEAR OVERVIEW */
+
+#year-title-overview {
+	margin-left: 16px;
+    margin-right: 16px;
+}
+@media screen and (min-device-width: 600px) and (max-device-width: 768px) {
+	#year-title-overview {
+		margin: 0 auto;
+		max-width: 540px;
+	}
+}
+@media screen and (min-device-width: 768px) {
+	#year-title-overview {
+		margin: 0 auto;
+		max-width: 540px;
+	}
+}
+
+#diff-up-iterator {
+	position: fixed;
+	right: 0;
+	bottom: 0;
+	margin-right: 5%;
+	margin-bottom: 15%;
+	background-color: orange;
+	border-radius: 50%;
+	width: 64px;
+	height: 64px;
+	box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+	background-image: url(/static/images/up-arrow.png);
+	background-position: center;
+}
+
+#diff-down-iterator {
+	position: fixed;
+	right: 0;
+	bottom: 0;
+	margin-right: 5%;
+	margin-bottom: 5%;
+	background-color: orange;
+	border-radius: 50%;
+	width: 64px;
+	height: 64px;
+	box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+	background-image: url(/static/images/down-arrow.png);
+	background-position: center;
+}
+
+/* PORTRAIT REVISIONS VISUALIZATION */
+#portrait-revisions-viz {
+	overflow-x: auto;
+	margin-left: 16px;
+    margin-right: 16px;
+    padding-bottom: 16px;
+}
+@media screen and (min-device-width: 768px) {
+	#portrait-revisions-viz {
+		overflow-x: auto;
+		display: none;
+	}
+}
+
+#portrait-revisions-viz-intro {
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
+#portrait-revisions-viz-graphic {
+	padding-top: 8px;
+}
+
+.portrait-revisions-viz-graphic-header {
+	padding-top: 8px;
+	padding-bottom: 8px;
+}
+
+.portrait-revisions-viz-bar-label {
+	display:inline-block;
+	line-height:32px;
+	vertical-align:bottom;
+	white-space:nowrap;
+}
+
+/* LANDSCAPE REVISIONS VISUALIZATION */
+
+#landscape-revisions-viz {
+	overflow-x: auto;
+	display: none;
+}
+@media screen and (min-device-width: 768px) {
+	#landscape-revisions-viz {
+		overflow-x: auto;
+		display: block;
+	}
+}
+#landscape-revisions-viz-intro {
+	width: 540px;
+	margin: 0 auto;
+	padding-bottom: 16px;
+}
+
+/* TYPOGRAPHY */
+.title-deletion-count {
+	color: red;
+}
+
+.title-addition-count {
+	color: green;
+}
+
+#legislation-summary-content {
+	overflow-x: auto; 
+}
