@@ -44,7 +44,7 @@ handlers:
 
 # Ignore all OLRC data files when deploying server.
 skip_files:
+- ^archives/*$
 - ^data/*$
-- ^txt/*$
 - ^(.*/)?.*~$
 - ^(.*/)?.*\.py[co]$
