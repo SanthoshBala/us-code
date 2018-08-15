@@ -1,9 +1,14 @@
 <html>
 	<head>
+		<link href="../../../static/stylesheets/site-header.css" 
+				rel="stylesheet" type="text/css">
 	</head>
 	<body>
+		{% include "site-header.html" %}
+
 		Caveats:
-			* It's technically possible that the Nth congress passes a law in early January, and that the N+1th congress repeals the law in that same year. A comparison of annual snapshots would be blind to this.
+			* It's technically possible that the Nth congress passes a law at the end of the year which doesn't get presented to the President until after the new year, so doesn't go into affect until the new year. I've considered these cases as being "passed" in the previous year. https://www.congress.gov/bill/112th-congress/senate-bill/3454/actions
+			* 
 
 	</body>
 </html>

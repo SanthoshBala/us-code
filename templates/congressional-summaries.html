@@ -1,0 +1,48 @@
+{% for congress in congressionalData.keys()|sort %}
+	
+	{% set overview = congressionalData[congress] %}
+
+	<div id="congress-overview">
+		<div id="section-title">
+			<h1 id="section-title-text"> 
+				{{ macros.ordinal_congress(congress) }}
+			</h1>
+		</div>
+
+		{% set president = overview["leadership"]["president"] %}
+		{% set houseDemLeader = overview["leadership"]["houseDemLeader"] %}
+		{% set houseRepLeader = overview["leadership"]["houseRepLeader"] %}
+		{% set senateDemLeader = overview["leadership"]["senateDemLeader"] %}
+		{% set senateRepLeader = overview["leadership"]["senateRepLeader"] %}
+
+		{% set senate = overview["senate"] %}
+		{% set house = overview["house"] %}
+
+		{% include "congressional_leadership_summary.html" %}
+
+		{% set publicLaws = overview["publicLaws"] %}
+		
+
+		<div id="legislation-summary">
+
+			{# Only print publicLaws if we have the data. #}
+			{% if publicLaws|length > 0 %}
+
+				<div id="legislation-summary-intro">
+					The {{ macros.ordinal_congress(congress) }} passed the following
+					major legislation in {{year}}.
+				</div>
+				{% set titleNames = annualData["titleNames"] %}
+				{{ macros.legislation_summary(year, publicLaws, titleNames) }}
+
+			{% else %}
+				<div id="legislation-summary-intro">
+					Though the {{ macros.ordinal_congress(congress) }} was technically in office for the first few weeks of January {{year}},
+					it did not pass any significant legislation during that time.
+				</div>
+			{% endif %}
+
+		</div>
+
+	</div>
+{% endfor %}

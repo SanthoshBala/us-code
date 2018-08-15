@@ -47,20 +47,27 @@
 	{% endif %}
 {% endmacro %}
 
-{% macro legislation_summary(publicLaws) %}
+{% macro legislation_summary(year, publicLaws, titleNames) %}
 	<div id="legislation-summary-content">
 		<table id="legislation-summary-table" align="center">
 			<tr>
-				<th align="left" valign="baseline">Name</th>
-				<th align="left" valign="baseline">Amended Titles</th>
-				<th align="left" valign="baseline">Description</th>
 				<th class="public-law-number" align="left" 
 					valign="baseline">Number</th>
 				<th class="public-law-date" align="left" 
 					valign="baseline">Date Enacted</th>
+				<th align="left" valign="baseline">Name</th>
+				<th align="left" valign="baseline">Amended Titles</th>
+				<th align="left" valign="baseline">Description</th>
+				
 			</tr>
 			{% for publicLaw in publicLaws %}
 				<tr>
+					<td class="public-law-number" valign="top">
+						<a href="http://legislink.org/us/pl-{{publicLaw.law_id}}">PL {{publicLaw.law_id}}</a>
+					</td>
+					<td class="public-law-date" valign="top">
+						{{publicLaw.date_enacted}}
+					</td>
 					<td class="public-law-title" valign="top">
 						{{publicLaw.title}}
 					</td>
@@ -68,9 +75,10 @@
 						{% set numCommas = 1 %}
 						{% for amended_title in publicLaw.amended_titles %}
 							{% if numCommas < publicLaw.amended_titles|length %}
-								<a href="/archive/annual/{{year}}/{{amended_title}}">{{amended_title}}</a>,
+								<a href="/archive/annual/{{year}}/{{amended_title}}">{{amended_title}} – {{titleNames[amended_title]}}</a>
+								<br>
 							{% else %}
-								<a href="/archive/annual/{{year}}/{{amended_title}}">{{amended_title}}</a>
+								<a href="/archive/annual/{{year}}/{{amended_title}}">{{amended_title}} – {{titleNames[amended_title]}}</a>
 							{% endif %}
 							{% set numCommas = numCommas + 1 %}
 						{% endfor %}
@@ -78,12 +86,7 @@
 					<td class="public-law-description" valign="top">
 						{{publicLaw.description}}
 					</td>
-					<td class="public-law-number" valign="top">
-						<a href="http://legislink.org/us/pl-{{publicLaw.law_id}}">PL {{publicLaw.law_id}}</a>
-					</td>
-					<td class="public-law-date" valign="top">
-						{{publicLaw.date_enacted}}
-					</td>
+					
 				</tr>
 			{% endfor %}
 		</table>

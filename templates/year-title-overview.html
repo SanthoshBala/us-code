@@ -1,0 +1,44 @@
+<div id="year-title-overview">
+	<p>	
+		{% set revisions = annualData["revisions"][title|int] %}
+
+		In {{year}}, 
+		
+		{# Add extra context of extent of revisions only if we have the data. #}
+
+		{%- if congressionalData.keys()|length == 1 -%}
+			{% set congress = congressionalData.keys()[0] %}
+			{% set numPublicLaws = congressionalData[congress]["publicLaws"]|length %}
+			{% set president = congressionalData[congress]["leadership"]["president"] %}
+			President {{president.last_name}} and the {{ macros.ordinal_congress(congress) }}
+		{%- else -%}
+			{% set congresses = congressionalData.keys()|sort %}
+			{% set numPublicLaws = (congressionalData[congresses[0]]["publicLaws"]|length + 
+				congressionalData[congresses[1]]["publicLaws"]|length) %}
+			the
+			{{ macros.ordinal_number(congresses[0]) }}
+			and 
+			{{ macros.ordinal_number(congresses[1]) }}
+			Congresses
+		{% endif %}
+
+		enacted 
+
+		{% if numPublicLaws == 1 %}
+			{{numPublicLaws}} major piece of legislation
+		{% else %}
+			{{numPublicLaws}} major pieces of legislation
+		{% endif %}
+
+		{% if numPublicLaws != 0 %}
+			affecting Title {{title}} ({{annualData["titleNames"][title|int]}})
+
+			{#- Add extra context of extent of revisions only if we have the data. -#}
+			{%- if annualData["revisions"].get("total") -%}
+
+				, yielding
+				a total of <span class="title-addition-count">{{revisions["ins"]}}</span> additions and <span class="title-deletion-count">{{ revisions["del"]}}</span> deletions
+			{%- endif -%}
+		{% endif %}.
+	</p>			
+</div>

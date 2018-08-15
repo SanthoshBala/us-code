@@ -1,19 +1,41 @@
 <html>
 	<head>
+		<link href="../../../static/stylesheets/site-header.css" 
+				rel="stylesheet" type="text/css">
 		<link href="../../../static/stylesheets/us-code-title.css" 
 				rel="stylesheet" type="text/css">
+		<link href="../../../static/stylesheets/year-title-archive.css" 
+				rel="stylesheet" type="text/css">				
+		<link href="../../../static/stylesheets/legislation-summary.css" 
+				rel="stylesheet" type="text/css">
+		<link href="../../../static/stylesheets/congressional-summaries.css" 
+				rel="stylesheet" type="text/css">
+		<link href="../../../static/stylesheets/common.css" 
+				rel="stylesheet" type="text/css">
 		<script src="../../../static/js/code-explorer.js"></script>
+		<script src="../../../static/js/year-title-archive.js"></script>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>The Code We Live By</title>
+
+		{# Jinja Macros #}
+		{% import 'macros.html' as macros %}
 	</head>
 	<body>
-		<div id="site-header">
-			<a id="site-title" href="/">The Code We Live By</a>
-		</div>
+		{% include "site-header.html" %}
 		
 		<div id="page-title">
-			<h1 id="page-title-text"> {{year}} – {{senate.ordinality}}th Congress </h1>
+			<h1 id="page-title-text">
+				{{year}} Title {{title}} Legislation
+			</h1>
 		</div>
+
+		<div id="diff-up-iterator" onclick="scrollToPreviousDiff()">
+		</div>
+		<div id="diff-down-iterator" onclick="scrollToNextDiff()">
+		</div>
+
+		{% set congressionalData = data["congressional"] %}
+		{% set annualData = data["annual"][year] %}
 
 		<div id="archive-navigator" align="center">	
 			Year:
@@ -29,7 +51,8 @@
 
 			Title:
 			<select id="title-selector" onchange="updateTitle()">
-				
+				{% set numTitles = annualData["titleNames"].keys()|length %}
+
 				{% for i in range(1, numTitles + 1) %}
 					{% if i == title|int %}
 						<option selected value="{{i}}">{{i}}</option>
@@ -40,246 +63,203 @@
 			</select>
 		</div>
 
-		<div id="title-year-overview">
-			<div id="section-title">
-				<h1 id="section-title-text"> Title {{title}} ({{year}}) </h1>
-			</div>
-			<p>
-				In {{year}}, Congress inserted <span id="num-insertions">{{titleInsertions}}</span> 
-				line(s) and deleted <span id="num-deletions">{{titleDeletions}}</span> line(s) from Title
-				{{title}}.
-			</p>
-			<p>
-				In {{year}} {{publicLaws|length}}
-				<ul>
-					{% for publicLaw in publicLaws %}
-						<li>{{publicLaw.title}} • {{publicLaw.date_enacted}}</li>	
+		{% include "year-title-overview.html" %}
+
+		{# Don't try to render revisions if we don't have the data. #}
+		{% set titularData = data["titular"] %}
+		{% if titularData.get(year|int) %}
+			<div id="portrait-revisions-viz">
+				<p id="portrait-revisions-viz-intro">
+					The chart below indicates, per title, the number of additions and deletions made in {{year}}. 
+					Tapping the bars for a particular title will load a separate page showing line-by-line changes,
+					along with detailed information about the specific laws which contained those changes.
+				</p>
+
+				<table id="portrait-revisions-viz-graphic" align="center">
+					{% set revisions = titularData %}
+					{% set vars = {'verticalScale' : 0 } %}
+					{% for key, value in revisions.iteritems() %}
+						{% if vars['verticalScale'] < value['ins'] + value['del'] %}
+							{% if vars.update({'verticalScale' : value['ins'] + value['del']})%}
+							{% endif %}
+						{% endif %}
+						
 					{% endfor %}
-				</ul>
-			</p>
-		</div>
+					{% set verticalScale = vars["verticalScale"] / 100 %}
+					<tr class="portrait-revisions-viz-graphic-header" valign="baseline">
+						<th class="portrait-revisions-viz-graphic-header" align="right">
+							← Deletions
+						</th>
+						<th class="portrait-revisions-viz-graphic-header" align="center">
+							Year
+						</th>
+						<th class="portrait-revisions-viz-graphic-header" align="left">
+							Additions →
+						</th>
+					</th>
 
-		<hr>
+					{% for key, value in revisions.iteritems()|sort %}
+						{# Repeat headers periodically to ensure it's always visible on screen. #}
+						{% if key % 15 == 0 %}
+							<tr valign="baseline">
+								<th class="portrait-revisions-viz-graphic-header" align="right">
+									← Deletions
+								</th class="portrait-revisions-viz-graphic-header">
+								<th align="center">
+									Year
+								</th>
+								<th class="portrait-revisions-viz-graphic-header" align="left">
+									Additions →
+								</th>
+							</th>
+						{% endif %}
 
-		<div id="congress-overview" align="center">
-			<div id="section-title">
-				<h1 id="section-title-text"> {{senate.ordinality}}th Congress ({{senate.first_year}}-{{senate.last_year}}) </h1>
+						{# Each horizontal bar will be equal to insertions + deletions + 32px for the title.
+							To ensure the bars will fit on the screen without scrolling, scale them based on
+							the device width. Assume that the widest device is 320px, so the bars must fit
+							within 20px. Scale factor should be maxInsertions + maxDeletions / 200. #}
+						{% set horizontal_scale = (revisions[year|int]["ins"] + revisions[year|int]["del"]) / 160 %}
+						<tr style="white-space:nowrap;">
+							<td align="right">
+								<a href="/archive/annual/{{key}}/{{title}}">
+									<div class="title-deletion-count portrait-revisions-viz-bar-label">
+										–{{value["del"]}}
+									</div>
+									<div style="background-color:red; width:{{value['del'] / verticalScale}}; height:32px; display:inline-block; vertical-align:bottom; white-space:nowrap;">
+									</div>
+								</a>
+							</td>
+							<td align="center">
+								<a href="/archive/annual/{{key}}/{{title}}">
+								<div class="portrait-revisions-viz-bar-label" style="color: white; background-color:gray; width:48px; height:32px;">
+										{{key}}
+								</div>
+								</a>
+							</td>
+							<td align="left">
+								<a href="/archive/annual/{{key}}/{{title}}">
+									<div style="background-color:green; width:{{value['ins'] / verticalScale}}; height:32px; display:inline-block; vertical-align:bottom; white-space:nowrap;">
+									</div>
+									<div class="title-addition-count portrait-revisions-viz-bar-label">
+										+{{value["ins"]}}
+									</div>
+								</a>
+							</td>
+						</tr>
+					{% endfor %}
+				</table>
 			</div>
-			<table id="government-summary">
-				{% set portraitHeight = "120px" %}
-					<tr>
-						<td align="center" colspan=2 class="branch-title">
-							Executive
-						</td>
-					</tr>
-					<tr>
-						<td align="center" colspan=2 class="branch-title">
-							<img src="/static/images/portraits/{{president.last_name.lower()}}.jpg" alt="{{president.last_name}}" height={{portraitHeight}}>
-						</td>
-					</tr>
-					<tr>
-						<td align="center" colspan=2>
-							{% if president.nickname %}
-								{{president.nickname}} 
-								{{president.last_name}}
-							{% else %}
-								{{president.first_name}}
-								{{president.last_name}}
+
+
+			<div id="landscape-revisions-viz">
+				<p id="landscape-revisions-viz-intro">
+					The chart below indicates, per title, the number of additions and deletions made in {{year}} (scroll horizontally to
+					see all titles). Clicking the bars for a particular title will load a separate page showing line-by-line changes,
+					along with detailed information about the specific laws which contained those changes.
+				</p>
+				<table id="landscape-revisions-viz" align="center">
+					{% set revisions = titularData %}
+					{% set vars = {'verticalScale' : 0 } %}
+					{% for key, value in revisions.iteritems() %}
+						{% if vars['verticalScale'] < value['ins'] + value['del'] %}
+							{% if vars.update({'verticalScale' : value['ins'] + value['del']})%}
 							{% endif %}
-							{% if president.party == "D" %}
-								(<span class="democrat-d">{{president.party}}</span>)
-							{% elif president.party == "R" %}
-								(<span class="republican-r">{{president.party}}</span>)
+						{% endif %}
+						
+					{% endfor %}
+					{% set verticalScale = vars["verticalScale"] / 100 %}
+					<tr>
+						<td valign="bottom" align="center">
+							<div style="background-color:white; width:60px;">
+							</div>
+						</td>
+						<td valign="bottom" align="center">
+							↑Additions↑
+						</td>
+						{% for key, value in revisions.iteritems() %}
+							{# set verticalScale = 10 #}
+							{% if key % 10 == 0 %}
+								<td valign="bottom" align="center">
+									↑Additions↑
+								</td>
 							{% endif %}
-						</td>
+							<td valign="bottom" align="center">
+								<a href="/archive/annual/{{key}}/{{title}}">
+									<div style="color:green;">
+										+{{value["ins"]}}
+									</div>
+									<div style="background-color:green; height:{{value['ins'] / verticalScale}}; width:60px;">
+									</div>
+								</a>
+							</td>
+						{% endfor %}
 					</tr>
 					<tr>
-						<td align="center" colspan=2 class="position-title">
-							POTUS
+						<td valign="bottom" align="center">
+							<div style="background-color:white; width:60px;">
+							</div>
 						</td>
-					</tr>
-					<tr>
-						<td align="center" colspan=1 class="branch-title">
-							House
+						<td valign="middle" align="center">
+							Title
 						</td>
-						<td align="center" colspan=1 class="branch-title">
-							Senate
-						</td>
-					</tr>
-					<tr>
-						<td align="center" colspan=1>
-							<span class="democrat-d">
-								{{house.democrats}} D</span> 
-							• 
-							{% if house.others > 0%}
-							<span class="independent-i">
-								{{house.others}} I</span> 
-							•
+						{% for key, value in revisions.iteritems() %}
+							
+							{% if key != "total" %}
+								{% if key % 10 == 0 %}
+									<td valign="middle" align="center">
+										Year
+									</td>
+								{% endif %}
+								<td align="center">
+									<a href="/archive/annual/{{key}}/{{title}}">
+										<div style="background-color:gray; color:white;">
+											{{key}}
+										</div>
+									</a>
+								</td>
 							{% endif %}
-							<span class="republican-r">
-								{{house.republicans}} R</span>
+						{% endfor %}
+					</tr>
+					<tr>
+						<td valign="bottom" align="center">
+							<div style="background-color:white; width:60px;">
+							</div>
 						</td>
-						<td align="center" colspan=1>
-							<span class="democrat-d">
-								{{senate.democrats}} D</span> 
-							• 
-							{% if senate.others > 0%}
-							<span class="independent-i">
-								{{senate.others}} I</span> 
-							•
+						<td valign="top" align="center">
+							↓Deletions↓
+						</td>
+						{% for key, value in revisions.iteritems() %}
+							{# set verticalScale = 10 #}
+							{% if key != "total" %}
+								{% if key % 10 == 0 %}
+									<td valign="top" align="center">
+										↓Deletions↓
+									</td>
+								{% endif %}
+								<td valign="top" align="center">
+									<a href="/archive/annual/{{key}}/{{title}}">
+										<div style="background-color:red; height:{{value['del'] / verticalScale}};">
+										</div>
+										<div style="color:red;">
+											–{{value["del"]}}
+										</div>
+									</a>
+								</td>
 							{% endif %}
-							<span class="republican-r">
-								{{senate.republicans}} R</span>
-						</td>
+						{% endfor %}
 					</tr>
-					<tr>
-						<td align="center">
-							{% if house.democrats >= house.republicans %}
-								<img src="/static/images/portraits/{{houseDemLeader.last_name.lower()}}.jpg" alt="{{houseDemLeader.last_name}}" height={{portraitHeight}}>
-							{% elif house.democrats < house.republicans %}
-								<img src="/static/images/portraits/{{houseRepLeader.last_name.lower()}}.jpg" alt="{{houseRepLeader.last_name}}" height={{portraitHeight}}>
-							{%endif%}
-						</td>
-						<td align="center">
-							{% if senate.democrats >= senate.republicans %}
-								<img src="/static/images/portraits/{{senateDemLeader.last_name.lower()}}.jpg" alt="{{senateDemLeader.last_name}}" height={{portraitHeight}}>
-							{% elif senate.democrats < senate.republicans %}
-								<img src="/static/images/portraits/{{senateRepLeader.last_name.lower()}}.jpg" alt="{{senateRepLeader.last_name}}" height={{portraitHeight}}>
-							{%endif%}
-						</td>
-					</tr>
-					<tr>
-						<td align="center">
-							{% if house.democrats >= house.republicans %}
-								{% if houseDemLeader.nickname %}
-									{{houseDemLeader.nickname}}
-								{% else %}
-									{{houseDemLeader.first_name}}
-								{% endif %}
-								{{houseDemLeader.last_name}}
-								(<span class="democrat-d">{{houseDemLeader.party}}</span>–{{houseDemLeader.state}})
-							{% elif house.democrats < house.republicans %}
-								{% if houseRepLeader.nickname %}
-									{{houseRepLeader.nickname}}
-								{% else %}
-									{{houseRepLeader.first_name}}
-								{% endif %}
-								{{houseRepLeader.last_name}}
-								(<span class="republican-r">{{houseRepLeader.party}}</span>–{{houseRepLeader.state}})
-							{%endif%}
-						</td>
-						<td align="center">
-							{% if senate.democrats >= senate.republicans %}
-								{% if senateDemLeader.nickname %}
-									{{senateDemLeader.nickname}}
-								{% else %}
-									{{senateDemLeader.first_name}}
-								{% endif %}
-								{{senateDemLeader.last_name}}
-								(<span class="democrat-d">{{senateDemLeader.party}}</span>–{{senateDemLeader.state}})
-							{% elif senate.democrats < senate.republicans %}
-								{% if senateRepLeader.nickname %}
-								{{senateRepLeader.nickname}}
-								{% else %}
-									{{senateRepLeader.first_name}}
-								{% endif %}
-								{{senateRepLeader.last_name}}
-								(<span class="republican-r">{{senateRepLeader.party}}</span>–{{senateRepLeader.state}})
-							{%endif%}
-						</td>
-					</tr>
-					<tr>
-						<td align="center" class="position-title">
-							{% if house.democrats == house.republicans %}
-								Democratic Leader
-							{% else %}
-								Speaker
-							{% endif %}
-						</td>
-						<td align="center" class="position-title">
-							{% if senate.democrats == senate.republicans %}
-								Democratic Leader
-							{% else %}
-								Majority Leader
-							{% endif %}
-						</td>
-					</tr>
-					<tr>
-						<td align="center">
-							{% if house.democrats >= house.republicans %}
-								<img src="/static/images/portraits/{{houseRepLeader.last_name.lower()}}.jpg" alt="{{houseRepLeader.last_name}}" height={{portraitHeight}}>
-							{% elif house.democrats < house.republicans %}
-								<img src="/static/images/portraits/{{houseDemLeader.last_name.lower()}}.jpg" alt="{{houseDemLeader.last_name}}" height={{portraitHeight}}>
-							{%endif%}
-						</td>
-						<td align="center">
-							{% if senate.democrats >= senate.republicans %}
-								<img src="/static/images/portraits/{{senateRepLeader.last_name.lower()}}.jpg" alt="{{senateRepLeader.last_name}}" height={{portraitHeight}}>
-							{% elif senate.democrats < senate.republicans %}
-								<img src="/static/images/portraits/{{senateDemLeader.last_name.lower()}}.jpg" alt="{{senateDemLeader.last_name}}" height={{portraitHeight}}>
-							{%endif%}
-						</td>
-					</tr>
-					<tr>
-						<td align="center">
-							{% if house.democrats >= house.republicans %}
-								{% if houseRepLeader.nickname %}
-									{{houseRepLeader.nickname}}
-								{% else %}
-									{{houseRepLeader.first_name}}
-								{% endif %}
-								{{houseRepLeader.last_name}}
-								(<span class="republican-r">{{houseRepLeader.party}}</span>–{{houseRepLeader.state}})
-							{% elif house.democrats < house.republicans %}
-								{% if houseDemLeader.nickname %}
-									{{houseDemLeader.nickname}}
-								{% else %}
-									{{houseDemLeader.first_name}}
-								{% endif %}
-								{{houseDemLeader.last_name}}
-								(<span class="democrat-d">{{houseDemLeader.party}}</span>–{{houseDemLeader.state}})
-							{%endif%}
-						</td>
-						<td align="center">
-							{% if senate.democrats >= senate.republicans %}
-								{% if senateRepLeader.nickname %}
-									{{senateRepLeader.nickname}}
-								{% else %}
-									{{senateRepLeader.first_name}}
-								{% endif %}
-								{{senateRepLeader.last_name}}
-								(<span class="republican-r">{{senateRepLeader.party}}</span>–{{senateRepLeader.state}})
-							{% elif senate.democrats < senate.republicans %}
-								{% if senateDemLeader.nickname %}
-									{{senateDemLeader.nickname}}
-								{% else %}
-									{{senateDemLeader.first_name}}
-								{% endif %}
-								{{senateDemLeader.last_name}}
-								(<span class="democrat-d">{{senateDemLeader.party}}</span>–{{senateDemLeader.state}})
-							{%endif%}
-						</td>
-					</tr>
-					<tr>
-						<td align="center" class="position-title">
-							{% if house.democrats == house.republicans %}
-								Republican Leader
-							{% else %}
-								Minority Leader
-							{% endif %}
-						</td>
-						<td align="center" class="position-title">
-							{% if senate.democrats == senate.republicans %}
-								Republican Leader
-							{% else %}
-								Minority Leader
-							{% endif %}
-						</td>
-					</tr>
-			</table>
-		</div>
-		<hr>
+				</table>
+			</div>
+		{% endif %}
+
+		<hr class="section-divider">
+
+		{% include "congressional-summaries.html" %}
+
+		<hr class="section-divider">
+
 		{% include 'code/diff/%d/usc-%d-%s-diff.html' % (year, year, title) %}
+
 	</body>
 </html>
 
